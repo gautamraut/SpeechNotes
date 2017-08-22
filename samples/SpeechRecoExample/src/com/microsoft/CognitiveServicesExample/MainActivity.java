@@ -36,6 +36,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +49,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -66,7 +69,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends Activity implements ISpeechRecognitionServerEvents, MessageAdapter.MessageItemSelector
+public class MainActivity extends AppCompatActivity implements ISpeechRecognitionServerEvents, MessageAdapter.MessageItemSelector
 {
     int m_waitSeconds = 0;
     private static String Tag = "HACKKK";
@@ -80,6 +83,7 @@ public class MainActivity extends Activity implements ISpeechRecognitionServerEv
 
     private MessageAdapter mAdapter;
     private EditText finalMessageView;
+    private BottomSheetBehavior mBottomSheetBehavior;
 
     public enum FinalResponseStatus { NotReceived, OK, Timeout }
 
@@ -205,6 +209,8 @@ public class MainActivity extends Activity implements ISpeechRecognitionServerEv
         finalMessageView.setMovementMethod(new ScrollingMovementMethod());
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        View bottomSheet = findViewById( R.id.bottom_sheet );
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
 
         mAdapter = new MessageAdapter(movieList, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -586,6 +592,7 @@ public class MainActivity extends Activity implements ISpeechRecognitionServerEv
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.test_api:
+                launchBottomSheet();
                 startRestTestActivity();
                 return true;
             case R.id.add_newItem:
@@ -633,5 +640,16 @@ public class MainActivity extends Activity implements ISpeechRecognitionServerEv
             activity.getWindow()
                     .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         }
+    }
+
+    private void launchBottomSheet() {
+        if(mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
+        {
+            WebView browser = (WebView) findViewById(R.id.webview);
+            // browser.loadUrl("http://www.google.com");
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+        else
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 }

@@ -3,7 +3,7 @@
                 android:layout_width="match_parent"
                 android:paddingTop="5px"
                 android:paddingBottom="5px"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
 	<TextView
 		android:paddingLeft="10px"

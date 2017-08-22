@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,16 +7,22 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.microsoft.AzureIntelligentServicesExample.MainActivity" >
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:text="Start" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
 
-    <!--<EditText-->
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="Start" />
+
+        <!--<EditText-->
         <!--android:id="@+id/editText1"-->
         <!--android:layout_width="fill_parent"-->
         <!--android:layout_height="fill_parent"-->
@@ -25,38 +31,57 @@
         <!--android:inputType="textMultiLine|textNoSuggestions"-->
         <!--android:textSize="15dp" />-->
 
-    <EditText
-        android:paddingBottom="40px"
-        android:id="@+id/finalText"
-        android:textIsSelectable="true"
-        android:gravity="top"
+        <EditText
+            android:paddingBottom="40px"
+            android:id="@+id/finalText"
+            android:textIsSelectable="true"
+            android:gravity="top"
+            android:layout_width="match_parent"
+            android:background="#999999"
+            android:inputType="textMultiLine"
+            android:layout_height="400px" />
+
+        <!--</ScrollView>-->
+        <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="400px">-->
+
+        <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="0000"-->
+        <!--android:visibility="invisible" />-->
+
+        <!--<EditText-->
+        <!--android:id="@+id/finalText"-->
+        <!--android:inputType="text"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"/>-->
+        <!--</FrameLayout>-->
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:scrollbars="vertical"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent" />
+    </LinearLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
-        android:background="#999999"
-        android:inputType="textMultiLine"
-        android:layout_height="400px" />
+        android:layout_height="350dp"
+        android:clipToPadding="true"
+        android:background="@android:color/holo_orange_light"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        >
 
-    <!--</ScrollView>-->
-    <!--<FrameLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="400px">-->
+        <WebView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/webview"
+            />
 
-    <!--<TextView-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="0000"-->
-    <!--android:visibility="invisible" />-->
+    </android.support.v4.widget.NestedScrollView>
 
-    <!--<EditText-->
-    <!--android:id="@+id/finalText"-->
-    <!--android:inputType="text"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"/>-->
-    <!--</FrameLayout>-->
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        android:scrollbars="vertical"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent" />
-
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
