@@ -34,6 +34,9 @@ package com.microsoft.CognitiveServicesExample;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -49,9 +52,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
 import com.microsoft.CognitiveServicesExample.model.Message;
@@ -84,6 +92,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     private MessageAdapter mAdapter;
     private EditText finalMessageView;
     private BottomSheetBehavior mBottomSheetBehavior;
+    private WebView mWebView;
+    private ProgressDialog mProgressDialog;
 
     public enum FinalResponseStatus { NotReceived, OK, Timeout }
 
@@ -217,6 +227,12 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
+
+        mWebView = (WebView) findViewById(R.id.webview);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.setWebViewClient(new ASHelpWebViewClient());
+        mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        mWebView.setHorizontalScrollBarEnabled(false);
 
         prepareMovieData();
 
@@ -593,7 +609,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         switch (item.getItemId()) {
             case R.id.test_api:
                 launchBottomSheet();
-                startRestTestActivity();
+                //startRestTestActivity();
                 return true;
             case R.id.add_newItem:
                 handleItemAddition("Mad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is test");
@@ -646,10 +662,100 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         if(mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
         {
             WebView browser = (WebView) findViewById(R.id.webview);
-            // browser.loadUrl("http://www.google.com");
+            browser.loadUrl("http://www.google.com");
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
         else
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+    private class ASHelpWebViewClient extends WebViewClient
+    {
+        public boolean shouldOverrideUrlLoading(WebView view, String url)
+        {
+            return false;
+        }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon)
+        {
+            showProgress(true);
+            super.onPageStarted(view, url, favicon);
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url)
+        {
+            showProgress(false);
+            super.onPageFinished(view, url);
+        }
+
+        @Override
+        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error)
+        {
+            Log.d("shrasti", "error" + error);
+            showProgress(false);
+            super.onReceivedError(view, request, error);
+        }
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        if (mWebView.canGoBack())
+        {
+            mWebView.goBack();
+        }
+        else
+        {
+            super.onBackPressed();
+        }
+    }
+
+    private void showProgress(final boolean show)
+    {
+        if (!isFinishing() && show)
+        {
+            if (mProgressDialog != null && !mProgressDialog.isShowing())
+            {
+                mProgressDialog.show();
+            }
+            else
+            {
+                if (mProgressDialog == null)
+                {
+                    mProgressDialog = new ProgressDialog(this,
+                            android.R.style.Theme_Translucent);
+                    mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener()
+                    {
+                        @Override
+                        public void onCancel(DialogInterface dialog)
+                        {
+                            onBackPressed();
+                        }
+                    });
+                }
+                mProgressDialog.show();
+                mProgressDialog.setContentView(getLayoutInflater().inflate(
+                        R.layout.progress_layout,
+                        new LinearLayout(getApplicationContext()), false));
+            }
+        }
+        else
+        {
+            if (mProgressDialog != null && mProgressDialog.isShowing())
+            {
+                mProgressDialog.dismiss();
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        if (mProgressDialog != null && mProgressDialog.isShowing())
+        {
+            mProgressDialog.dismiss();
+        }
+        super.onDestroy();
     }
 }
