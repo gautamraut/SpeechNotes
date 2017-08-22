@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:paddingTop="5px"
+                android:paddingBottom="5px"
+                android:layout_height="match_parent">
+
+	<TextView
+		android:paddingLeft="10px"
+		android:id="@+id/title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:textColor="#222222"
+		android:textSize="16dp" />
+
+	<ImageButton
+		android:id="@+id/accept"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:src="@drawable/accept_icon"
+		android:background="@null"
+		android:padding="10px"
+		android:text="Accept"
+		android:layout_alignBottom="@+id/title"
+		android:layout_toStartOf="@+id/reject" />
+
+	<ImageButton
+		android:id="@+id/reject"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:src="@drawable/reject_icon"
+		android:background="@null"
+		android:padding="10px"
+		android:text="Reject"
+		android:layout_alignTop="@+id/accept"
+		android:layout_alignParentEnd="true"
+		android:layout_marginEnd="11dp" />
+
+</RelativeLayout>

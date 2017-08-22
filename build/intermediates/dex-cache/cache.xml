@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="/Users/shrbansa/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/23.0.1/support-annotations-23.0.1.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.3"
+        sha1="1fce89a6428c51467090d7f424e4c9c3dbd55f7e">
+        <dex dex="/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/build/intermediates/pre-dexed/arm/debug/support-annotations-23.0.1_d5559d45ce606145711c27426a06061d8f25dc3f.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/shrbansa/.android/build-cache/e4a9e9a04259f200969d9d8b11e3e0b994bcfd3a/output/jars/libs/SpeechSDK.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.3"
+        sha1="1c0acb42d159b8d56f429082659b3f9ce464bb88">
+        <dex dex="/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/build/intermediates/pre-dexed/arm/debug/SpeechSDK_1e4cff3beacfd01695e3648f3db9c8cacc3c2161.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/shrbansa/.android/build-cache/e4a9e9a04259f200969d9d8b11e3e0b994bcfd3a/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.3"
+        sha1="70f7b205c60f52e5adb02a540758a30f969f1d66">
+        <dex dex="/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/build/intermediates/pre-dexed/arm/debug/classes_76c6fae10d651ace52c6f8dc48fe22c2b96a49ae.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/shrbansa/.android/build-cache/cd7b4cb62ccd5839c0df6f65ad0d9909c9549a9d/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.3"
+        sha1="4356e230a981d1bbf047d848b91bc0d9b7c5bacc">
+        <dex dex="/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/build/intermediates/pre-dexed/arm/debug/classes_85f3cf95ee1d9d5287744e85e41821dcab2fe05a.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/shrbansa/.android/build-cache/28ad62459adc67185a0e895b7a6f9b457572f0ea/output/jars/classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.3"
+        sha1="c31e21b53ff2f74664e498248d01453a32e32d48">
+        <dex dex="/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/build/intermediates/pre-dexed/arm/debug/classes_25bc13b0cabaa58f37f678b4f631277f74249c5b.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="/Users/shrbansa/.android/build-cache/28ad62459adc67185a0e895b7a6f9b457572f0ea/output/jars/libs/internal_impl-23.0.1.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.3"
+        sha1="aa92916125166649d8ad4ba3940c3dd7515596d3">
+        <dex dex="/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/build/intermediates/pre-dexed/arm/debug/internal_impl-23.0.1_310ab892a87afa3ac9cdf3f95c21a105652836bb.jar" />
+    </item>
+
+</items>

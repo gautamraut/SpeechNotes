@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/test_api"
+          android:icon="@drawable/accept_icon"
+          android:title="TestAPI"
+          android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/add_newItem"
+          android:icon="@drawable/accept_icon"
+          android:title="TestAPI"
+          android:showAsAction="ifRoom"/>
+
+</menu>

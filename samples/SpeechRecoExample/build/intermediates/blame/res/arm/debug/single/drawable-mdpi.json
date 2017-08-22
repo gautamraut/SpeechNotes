@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/build/intermediates/res/merged/arm/debug/drawable-mdpi/reject_icon.png",
+        "source": "/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/res/drawable-mdpi/reject_icon.png"
+    },
+    {
+        "merged": "/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/build/intermediates/res/merged/arm/debug/drawable-mdpi/ic_launcher.png",
+        "source": "/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/res/drawable-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/build/intermediates/res/merged/arm/debug/drawable-mdpi/accept_icon.png",
+        "source": "/Users/shrbansa/bolt/summary/Cognitive-Speech-STT-Android-master/samples/SpeechRecoExample/res/drawable-mdpi/accept_icon.png"
+    }
+]
