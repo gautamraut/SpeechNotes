@@ -5,9 +5,19 @@
           android:title="TestAPI"
           android:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/goback"
+        android:icon="@drawable/accept_icon"
+        android:title="goback"
+        android:showAsAction="ifRoom"/>
+
     <item android:id="@+id/add_newItem"
           android:icon="@drawable/accept_icon"
           android:title="TestAPI"
           android:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/launch_camera"
+        android:icon="@drawable/accept_icon"
+        android:title="Camera"
+        android:showAsAction="ifRoom"/>
 
 </menu>

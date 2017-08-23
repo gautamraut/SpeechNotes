@@ -34,6 +34,8 @@ package com.microsoft.CognitiveServicesExample;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -42,6 +44,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -112,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     private WebView mWebView;
     private Activity mActivity;
     private ProgressDialog mProgressDialog;
+    private Fragment mCameraFrg;
 
     final static String apiKey = "AIzaSyBQY-XSNnYezYpoiUTb9kCIDAnklH4H2kE";
     final static String customSearchEngineKey = "017444164145125540543:pexazkna2qu";
@@ -271,6 +275,12 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
 
         prepareMovieData();
 
+//        android.app.FragmentManager manager = this.getFragmentManager();
+//        FragmentTransaction fragmentTransaction = manager.beginTransaction();
+//        fragmentTransaction.add(R.id.container, new NoteFragment());
+//        fragmentTransaction.addToBackStack("dummy");
+//        fragmentTransaction.commit();
+//        manager.executePendingTransactions();
     }
 
     /**
@@ -641,13 +651,31 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
+        android.app.FragmentManager manager = this.getFragmentManager();
         switch (item.getItemId()) {
             case R.id.test_api:
                 launchBottomSheet("hello");
                 //startRestTestActivity();
                 return true;
+            case R.id.goback:
+                int fragmentCount = manager.getBackStackEntryCount();
+                if ( fragmentCount > 0) {
+                    FragmentTransaction trans = manager.beginTransaction();
+                    trans.remove(mCameraFrg);
+                    trans.commit();
+                    manager.popBackStack();
+                }
+                return true;
             case R.id.add_newItem:
                 new LongOperation(finalMessageView.getText().toString()).execute("");
+                return true;
+            case R.id.launch_camera:
+                mCameraFrg = Camera2BasicFragment.newInstance();
+                FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                fragmentTransaction.add(R.id.container, mCameraFrg);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                manager.executePendingTransactions();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
