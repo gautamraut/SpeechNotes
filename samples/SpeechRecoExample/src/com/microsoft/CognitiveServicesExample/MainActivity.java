@@ -67,6 +67,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
+import com.ibm.watson.developer_cloud.natural_language_understanding.v1.NaturalLanguageUnderstanding;
+import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.AnalysisResults;
+import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.AnalyzeOptions;
+import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.ConceptsOptions;
+import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.Features;
 import com.microsoft.CognitiveServicesExample.model.Message;
 import com.microsoft.bing.speech.SpeechClientStatus;
 import com.microsoft.cognitiveservices.speechrecognition.DataRecognitionClient;
@@ -77,7 +82,14 @@ import com.microsoft.cognitiveservices.speechrecognition.RecognitionStatus;
 import com.microsoft.cognitiveservices.speechrecognition.SpeechRecognitionMode;
 import com.microsoft.cognitiveservices.speechrecognition.SpeechRecognitionServiceFactory;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -100,6 +112,10 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     private WebView mWebView;
     private Activity mActivity;
     private ProgressDialog mProgressDialog;
+
+    final static String apiKey = "AIzaSyBQY-XSNnYezYpoiUTb9kCIDAnklH4H2kE";
+    final static String customSearchEngineKey = "017444164145125540543:pexazkna2qu";
+    final static String searchURL = "https://www.googleapis.com/customsearch/v1?";
 
     public enum FinalResponseStatus { NotReceived, OK, Timeout }
 
@@ -631,7 +647,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 //startRestTestActivity();
                 return true;
             case R.id.add_newItem:
-                handleItemAddition("Mad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is test");
+                new LongOperation(finalMessageView.getText().toString()).execute("");
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -829,6 +846,139 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         }
 
         public void onDestroyActionMode(ActionMode mode) {
+        }
+    }
+
+    public static String search(String pUrl) {
+        try {
+            URL url = new URL(pUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            String line;
+            StringBuffer buffer = new StringBuffer();
+            while ((line = br.readLine()) != null) {
+                buffer.append(line);
+            }
+            return buffer.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    private static String buildSearchString(String searchString, int start, int numOfResults) {
+        String toSearch = searchURL + "key=" + apiKey + "&cx=" + customSearchEngineKey + "&q=";
+
+        // replace spaces in the search query with +
+        String newSearchString = searchString.replace(" ", "%20");
+
+        toSearch += newSearchString;
+
+        // specify response format as json
+        toSearch += "&alt=json";
+
+        // specify starting result number
+        toSearch += "&start=" + start;
+
+        // specify the number of results you need from the starting position
+        toSearch += "&num=" + numOfResults;
+
+        System.out.println("Seacrh URL: " + toSearch);
+        return toSearch;
+    }
+
+    private class LongOperation extends AsyncTask<String, Void, String> {
+
+        private String mData;
+
+        LongOperation(String data) {
+            mData = data;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String outputURL = "";
+            NaturalLanguageUnderstanding service = new NaturalLanguageUnderstanding(
+                    NaturalLanguageUnderstanding.VERSION_DATE_2017_02_27,
+                    "e418d864-c956-409f-b3c9-9061202cf4d2",
+                    "3hQQK6RE11eP"
+            );
+
+            String text = "IBM is an American multinational technology " +
+                    "company headquartered in Armonk, New York, " +
+                    "United States, with operations in over 170 countries.";
+            //text = mData;
+            ConceptsOptions conceptsOp = new ConceptsOptions.Builder().limit(5).build();
+            Features features = new Features.Builder().concepts(conceptsOp).build();
+
+            AnalyzeOptions parameters = new AnalyzeOptions.Builder().text(text).features(features).build();
+            AnalysisResults response = service.analyze(parameters).execute();
+            try {
+                JSONObject result = new JSONObject(String.valueOf(response));
+                JSONArray concepts = result.getJSONArray("concepts");
+                for (int i = 0; i < concepts.length(); i++) {
+                    JSONObject conceptsObject = concepts.getJSONObject(i);
+                    String res = conceptsObject.getString("text");
+                    Log.d("text", res);
+
+                    String url = buildSearchString(res, 1, 2);
+                    String urlResults = search(url);
+                    System.out.println(urlResults);
+                    int fromIndex = 0, len = urlResults.length();
+                    while (fromIndex < len) {
+                        int foundIndex = urlResults.indexOf("\"link\"", fromIndex);
+                        System.out.println("Index= " + foundIndex);
+                        if (foundIndex == -1)
+                            break;
+                        else {
+
+                            int delimitIndex = urlResults.indexOf(",", foundIndex);
+                            System.out.println("DelimitIndex= " + delimitIndex);
+                            if (delimitIndex < len) {
+                                //System.out.println("TempURL= "+ result.substring(foundIndex +9, delimitIndex -1));
+                                outputURL = outputURL.concat(urlResults.substring(foundIndex + 9, delimitIndex - 1));
+                                outputURL = outputURL.concat(";");
+                                System.out.println("OutputURL= " + outputURL);
+                            }
+                        }
+
+                        fromIndex = foundIndex + 20;
+
+                    }
+
+                }
+
+            } catch (Exception e) {
+            }
+
+            //return "Executed";
+            return outputURL;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //TextView txt = (TextView) findViewById(R.id.output);
+            //txt.setText("Executed"); // txt.setText(result);
+            // might want to change "executed" for the returned string passed
+            // into onPostExecute() but that is upto you
+            System.out.println("InPostExecute");
+            System.out.println(result);
+            String[] splitString = result.split(";");
+
+            for (int i = 0; i < splitString.length; i++) {
+                finalMessageView.append(splitString[i]);
+                finalMessageView.append("\n");
+            }
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
         }
     }
 }
