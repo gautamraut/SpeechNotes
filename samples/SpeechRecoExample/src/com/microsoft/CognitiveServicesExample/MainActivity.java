@@ -35,8 +35,10 @@ package com.microsoft.CognitiveServicesExample;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -44,14 +46,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.method.ScrollingMovementMethod;
+import android.text.SpannableStringBuilder;
+import android.text.style.CharacterStyle;
+import android.text.style.StyleSpan;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -93,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     private EditText finalMessageView;
     private BottomSheetBehavior mBottomSheetBehavior;
     private WebView mWebView;
+    private Activity mActivity;
     private ProgressDialog mProgressDialog;
 
     public enum FinalResponseStatus { NotReceived, OK, Timeout }
@@ -195,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mActivity = this;
         //this._logText = (EditText) findViewById(R.id.editText1);
         this._startButton = (Button) findViewById(R.id.button1);
 
@@ -216,7 +223,19 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         });
 
         finalMessageView = (EditText)findViewById(R.id.finalText);
-        finalMessageView.setMovementMethod(new ScrollingMovementMethod());
+//        finalMessageView.setMovementMethod(new ScrollingMovementMethod());
+//        finalMessageView.clearFocus();
+        finalMessageView.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v)
+            {
+                Log.d(Tag, "edittextclciked");
+                showKeyboard(mActivity);
+            }
+        });
+
+        finalMessageView.setCustomSelectionActionModeCallback(new StyleCallback());
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         View bottomSheet = findViewById( R.id.bottom_sheet );
@@ -608,7 +627,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.test_api:
-                launchBottomSheet();
+                launchBottomSheet("hello");
                 //startRestTestActivity();
                 return true;
             case R.id.add_newItem:
@@ -644,25 +663,33 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         hideKeyboard(this);
     }
 
-    public static void showKeyboard(Activity activity) {
+    public void showKeyboard(Activity activity) {
         if (activity != null) {
-            activity.getWindow()
-                    .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            Log.d(Tag, "showing keyboard");
+//            activity.getWindow()
+//                    .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//            imm.showSoftInput()
+            //imm.showSoftInputFromInputMethod(finalMessageView.getWindowToken(), 0);
+            imm.showSoftInput(finalMessageView, InputMethodManager.SHOW_IMPLICIT);
         }
     }
 
-    public static void hideKeyboard(Activity activity) {
-        if (activity != null) {
-            activity.getWindow()
-                    .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        }
+    public void hideKeyboard(Activity activity) {
+//        if (activity != null) {
+//            activity.getWindow()
+//                    .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+//        }
+//        InputMethodManager imm = (InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+//        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
-    private void launchBottomSheet() {
+    private void launchBottomSheet(String query) {
         if(mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED)
         {
             WebView browser = (WebView) findViewById(R.id.webview);
-            browser.loadUrl("http://www.google.com");
+            Log.d(Tag, "http://www.google.com/search?q?q=" + query );
+            browser.loadUrl( "http://www.google.com/search?q=" + query );
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
         else
@@ -757,5 +784,51 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
             mProgressDialog.dismiss();
         }
         super.onDestroy();
+    }
+
+    class StyleCallback implements ActionMode.Callback {
+
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            Log.d(Tag, "onCreateActionMode");
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.custom_options, menu);
+            menu.removeItem(android.R.id.selectAll);
+            return true;
+        }
+
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            Log.d(Tag, String.format("onActionItemClicked item=%s/%d", item.toString(), item.getItemId()));
+            CharacterStyle cs;
+            int start = finalMessageView.getSelectionStart();
+            int end = finalMessageView.getSelectionEnd();
+            SpannableStringBuilder ssb = new SpannableStringBuilder(finalMessageView.getText());
+
+            switch(item.getItemId()) {
+
+                case R.id.search:
+//                    cs = new StyleSpan(Typeface.BOLD);
+//                    ssb.setSpan(cs, start, end, 1);
+//                    finalMessageView.getText()
+//                    finalMessageView.setText(ssb);
+                    String selectedText = finalMessageView.getText().toString().substring(start, end);
+                    Log.d(Tag, "the search query is " + selectedText);
+                    launchBottomSheet(selectedText);
+                    return true;
+
+                case R.id.addToTaskList:
+                    cs = new StyleSpan(Typeface.ITALIC);
+                    ssb.setSpan(cs, start, end, 1);
+                    finalMessageView.setText(ssb);
+                    return true;
+            }
+            return false;
+        }
+
+        public void onDestroyActionMode(ActionMode mode) {
+        }
     }
 }

@@ -38,8 +38,10 @@
             android:gravity="top"
             android:layout_width="match_parent"
             android:background="#999999"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:inputType="textMultiLine"
-            android:layout_height="400px" />
+            android:layout_height="400dp" />
 
         <!--</ScrollView>-->
         <!--<FrameLayout-->
