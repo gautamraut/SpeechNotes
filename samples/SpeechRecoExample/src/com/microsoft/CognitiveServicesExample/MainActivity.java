@@ -56,6 +56,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
+import android.text.method.ScrollingMovementMethod;
 import android.text.style.CharacterStyle;
 import android.text.style.StyleSpan;
 import android.util.Log;
@@ -273,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         View bottomSheet = findViewById( R.id.bottom_sheet );
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        mBottomSheetBehavior.setPeekHeight(0);
 
         mAdapter = new MessageAdapter(movieList, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -296,6 +298,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
 
 
         mPartialView = (TextView)findViewById(R.id.partialResult);
+        mPartialView.setMovementMethod(new ScrollingMovementMethod());
 
         prepareMovieData();
 
@@ -702,9 +705,11 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 manager.executePendingTransactions();
+                return true;
             case R.id.done:
                 Intent intent = new Intent(this, Preview.class);
                 startActivity(intent);
+                return true;
             case R.id.saveAsPdf:
                 //createWebPrintJob(finalTextInWebView);
                 addImage("nn");

@@ -75,6 +75,8 @@
             <TextView
                 android:textColor="@color/white"
                 android:id="@+id/partialResult"
+                android:scrollbars="vertical"
+                android:maxLines="10000"
                 android:textSize="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
