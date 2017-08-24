@@ -1,0 +1,27 @@
+<body>
+<div id="main-container" contenteditable="true">
+</div>
+
+<script>
+     function appendText(extraStr) {
+     var text = document.createElement("div");
+     text.innerHTML = extraStr ;
+     var container = document.getElementById('main-container');
+     container.appendChild(text);
+     var br = document.createElement("br");
+     container.appendChild(br);
+     }
+
+     function appendImage(extraStr) {
+     var oImg = document.createElement("img");
+        oImg.setAttribute('src', extraStr);
+        oImg.style.width = '400px';
+        oImg.style.height = '100px';
+        oImg.setAttribute('alt', 'na');
+        var container = document.getElementById('main-container');
+        container.appendChild(oImg);
+        var br = document.createElement("br");
+        container.appendChild(br);
+     }
+</script>
+</body>
