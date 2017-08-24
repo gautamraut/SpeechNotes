@@ -66,6 +66,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -96,6 +97,7 @@ import com.microsoft.cognitiveservices.speechrecognition.RecognitionStatus;
 import com.microsoft.cognitiveservices.speechrecognition.SpeechRecognitionMode;
 import com.microsoft.cognitiveservices.speechrecognition.SpeechRecognitionServiceFactory;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -106,12 +108,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.microsoft.CognitiveServicesExample.DataAcrossActivity.movieList;
 import static com.microsoft.CognitiveServicesExample.R.id.listen_view;
 
 public class MainActivity extends AppCompatActivity implements ISpeechRecognitionServerEvents, MessageAdapter.MessageItemSelector, PreviewWebView.WebViewSocketListener, Camera2BasicFragment.SuccessDataFromActivityListener
@@ -123,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     FinalResponseStatus isReceivedResponse = FinalResponseStatus.NotReceived;
     //EditText _logText;
     Button _startButton;
-    private List<Message> movieList = new ArrayList<>();
     private RecyclerView recyclerView;
 
     private MessageAdapter mAdapter;
@@ -313,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         mBottomSheetBehavior.setPeekHeight(0);
 
-        mAdapter = new MessageAdapter(movieList, this, this);
+        mAdapter = new MessageAdapter(DataAcrossActivity.getInstance().movieList, this, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
 
         finalTextInWebView.loadUrl("file:///android_asset/text.html");
 
-        finalTextInWebView.addJavascriptInterface(new MyJavaScriptWebViewInterface(), "HTMLOUT");
+        //finalTextInWebView.addJavascriptInterface(new MyJavaScriptWebViewInterface(), "HTMLOUT");
 
         listenView = (LinearLayout)findViewById(listen_view);
 
@@ -631,8 +631,11 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         @SuppressWarnings("unused")
         public void processHTML(String html)
         {
+            Log.d("HACK", html);
             // process the html as needed by the app
             DataAcrossActivity.getInstance().setNotes(html);
+            Intent intent = new Intent(mActivity, Preview.class);
+            startActivity(intent);
         }
     }
 
@@ -663,9 +666,20 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 manager.executePendingTransactions();
                 return true;
             case R.id.done:
-                finalTextInWebView.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
-                Intent intent = new Intent(this, Preview.class);
-                startActivity(intent);
+                finalTextInWebView.evaluateJavascript("(function(){return document.getElementById('main-container').innerHTML})()",
+                        new ValueCallback<String>()
+                        {
+                            @Override
+                            public void onReceiveValue(String value)
+                            {
+                                Log.v(Tag, "SELECTION:" + StringEscapeUtils.unescapeJava(value));
+                                String Title = StringEscapeUtils.unescapeJava(value);
+                                DataAcrossActivity.getInstance().setNotes(StringEscapeUtils.unescapeJava(value));
+                                Intent intent = new Intent(mActivity, Preview.class);
+                                startActivity(intent);
+                            }
+                        });
+                //finalTextInWebView.loadUrl("javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML");
                 return true;
             case R.id.saveAsPdf:
                 //createWebPrintJob(finalTextInWebView);
@@ -927,7 +941,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
             Log.d("shrasti",  "file exists and size is " + file.length());
         }
         Log.d("shrasti", "done");
-        finalTextInWebView.loadUrl("javascript:appendImage('" + path + "')");
+        String imagePath = "file://"+ path;
+        finalTextInWebView.loadUrl("javascript:appendImage('" + imagePath + "')");
     }
 
 

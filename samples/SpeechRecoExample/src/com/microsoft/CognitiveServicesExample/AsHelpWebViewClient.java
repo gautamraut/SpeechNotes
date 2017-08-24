@@ -30,6 +30,11 @@ public class AsHelpWebViewClient extends WebViewClient
 	{
 		//showProgress(false);
 		super.onPageFinished(view, url);
+		Log.d("HACK", "onPageFinished: " + url);
+		if(url.equalsIgnoreCase("file:///android_asset/test_2.html")){
+			Log.d("HACK", "CustomURL");
+			view.loadUrl("javascript:appendNodeData('" + DataAcrossActivity.getInstance().getNotes() + "')");
+		}
 	}
 
 	@Override

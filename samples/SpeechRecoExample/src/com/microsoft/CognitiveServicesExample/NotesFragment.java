@@ -1,9 +1,6 @@
 package com.microsoft.CognitiveServicesExample;
 
 
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
@@ -11,12 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.LinearLayout;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,8 +45,10 @@ public class NotesFragment extends Fragment implements PreviewWebView.WebViewSoc
         mNotesWebView = (PreviewWebView) getView().findViewById(R.id.notesPreview);
         mNotesWebView.init(this);
 
-        //mNotesWebView.loadUrl(DataAcrossActivity.getInstance().getNotes());
-        mNotesWebView.loadData(DataAcrossActivity.getInstance().getNotes(), "text/html", "UTF-8");
+        //String imgSrcHtml = "<html><img src='" + "https://madeby.google.com/static/images/google_g_logo.svg" + "' /></html>";
+        mNotesWebView.loadUrl("file:///android_asset/test_2.html");
+        //mNotesWebView.loadData(imgSrcHtml, "text/html", "UTF-8");
+        Log.d("shrasti" , "data is " + DataAcrossActivity.getInstance().getNotes());
     }
 
     private void launchBottomSheet(String query) {

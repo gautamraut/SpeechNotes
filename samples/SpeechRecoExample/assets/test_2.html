@@ -1,0 +1,48 @@
+<body>
+<div id="main-container" contenteditable="true">
+</div>
+
+<script>
+     function appendText(extraStr) {
+     var text = document.createElement("div");
+     text.innerHTML = extraStr ;
+     var container = document.getElementById('main-container');
+     container.appendChild(text);
+     var br = document.createElement("br");
+     container.appendChild(br);
+     window.scrollTo(0, document.body.scrollHeight);
+     }
+
+     function appendImage(extraStr) {
+     var oImg = document.createElement("img");
+        oImg.setAttribute('src', extraStr);
+        oImg.style.width = '400px';
+        oImg.setAttribute('alt', 'na');
+        var container = document.getElementById('main-container');
+        container.appendChild(oImg);
+        var br = document.createElement("br");
+        container.appendChild(br);
+        window.scrollTo(0, document.body.scrollHeight);
+     }
+
+
+     function appendNodeData(str) {
+           alert('dummy')
+           var dat = document.createElement("div");
+           dat.innerHTML = str ;
+           var container = document.getElementById('main-container');
+           container.appendChild(dat);
+     }
+</script>
+
+<style>
+    .img {
+        min-height: 400px;
+        -ms-transform: rotate(90deg); /* IE 9 */
+        -webkit-transform: rotate(90deg); /* Safari and Chrome */
+        -o-transform: rotate(90deg); /* Opera */
+        -moz-transform: rotate(90deg); /* Firefox */
+        transform: rotate(90deg)
+    }
+</style>
+</body>
