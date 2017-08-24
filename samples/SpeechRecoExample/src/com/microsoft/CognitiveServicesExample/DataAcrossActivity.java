@@ -1,7 +1,10 @@
 package com.microsoft.CognitiveServicesExample;
 
+import com.microsoft.CognitiveServicesExample.model.Message;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,6 +16,7 @@ public class DataAcrossActivity
     // static variable single_instance of type Singleton
     private static DataAcrossActivity single_instance = null;
     public static Map<String,String> map= null;
+    public static List<Message> movieList = new ArrayList<>();
 
     // variable of type String
     public String notes;
