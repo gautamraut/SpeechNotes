@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     public void addToOthersTask(String message)
     {
         //add to others task
-        new ActionItem("Shefali is assigned MA work.").execute("");
+        new ActionItem(message).execute("");
     }
 
     @Override
