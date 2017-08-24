@@ -41,8 +41,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -55,10 +53,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableStringBuilder;
 import android.text.method.ScrollingMovementMethod;
-import android.text.style.CharacterStyle;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -67,11 +62,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -105,7 +96,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity implements ISpeechRecognitionServerEvents, MessageAdapter.MessageItemSelector
+import static com.microsoft.CognitiveServicesExample.R.id.listen_view;
+
+public class MainActivity extends AppCompatActivity implements ISpeechRecognitionServerEvents, MessageAdapter.MessageItemSelector, PreviewWebView.WebViewSocketListener
 {
     int m_waitSeconds = 0;
     private static String Tag = "HACKKK";
@@ -120,16 +113,35 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     private MessageAdapter mAdapter;
     private EditText finalMessageView;
     private BottomSheetBehavior mBottomSheetBehavior;
-    private WebView mWebView;
+    private PreviewWebView mWebView;
     private Activity mActivity;
     private ProgressDialog mProgressDialog;
     private Fragment mCameraFrg;
-    private WebView finalTextInWebView;
+    private PreviewWebView finalTextInWebView;
     private TextView mPartialView;
+    private LinearLayout listenView;
 
     final static String apiKey = "AIzaSyBQY-XSNnYezYpoiUTb9kCIDAnklH4H2kE";
     final static String customSearchEngineKey = "017444164145125540543:pexazkna2qu";
     final static String searchURL = "https://www.googleapis.com/customsearch/v1?";
+
+    @Override
+    public void lookup(String message)
+    {
+        launchBottomSheet(message);
+    }
+
+    @Override
+    public void addToMyTask(String message)
+    {
+        //add to my tasks
+    }
+
+    @Override
+    public void addToOthersTask(String message)
+    {
+        //add to others task
+    }
 
     public enum FinalResponseStatus { NotReceived, OK, Timeout }
 
@@ -269,33 +281,29 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
             }
         });
 
-        finalMessageView.setCustomSelectionActionModeCallback(new StyleCallback());
+        //finalMessageView.setCustomSelectionActionModeCallback(new StyleCallback());
 
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         View bottomSheet = findViewById( R.id.bottom_sheet );
         mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
         mBottomSheetBehavior.setPeekHeight(0);
 
-        mAdapter = new MessageAdapter(movieList, this);
+        mAdapter = new MessageAdapter(movieList, this, this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
 
-        mWebView = (WebView) findViewById(R.id.webview);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.setWebViewClient(new ASHelpWebViewClient());
-        mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        mWebView.setHorizontalScrollBarEnabled(false);
+        mWebView = (PreviewWebView) findViewById(R.id.webview);
+        mWebView.init(this);
 
-        finalTextInWebView = (WebView) findViewById(R.id.finalTextInWebView);
-        finalTextInWebView.getSettings().setJavaScriptEnabled(true);
-        finalTextInWebView.setWebViewClient(new ASHelpWebViewClient());
-        finalTextInWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        finalTextInWebView.setHorizontalScrollBarEnabled(false);
+        finalTextInWebView = (PreviewWebView) findViewById(R.id.finalTextInWebView);
+        finalTextInWebView.init(this);
 
         finalTextInWebView.loadUrl("file:///android_asset/text.html");
 
+
+        listenView = (LinearLayout)findViewById(listen_view);
 
         mPartialView = (TextView)findViewById(R.id.partialResult);
         mPartialView.setMovementMethod(new ScrollingMovementMethod());
@@ -314,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
      * Handles the Click event of the _startButton control.
      */
     private void StartButton_Click(View arg0) {
+        listenView.setVisibility(View.VISIBLE);
         this._startButton.setEnabled(false);
 
         this.m_waitSeconds = this.getMode() == SpeechRecognitionMode.ShortPhrase ? 20 : 200;
@@ -430,6 +439,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                         " Text=\"" + response.Results[i].DisplayText + "\"");
                 Log.d(Tag, response.Results[0].DisplayText);
                 handleItemAddition(response.Results[0].DisplayText);
+                mPartialView.setText("");
             }
             this.WriteLine();
         }
@@ -446,6 +456,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
 
     public void onPartialResponseReceived(final String response) {
         this.WriteLine("--- Partial result received by onPartialResponseReceived() ---");
+        mPartialView.setText(response);
         this.WriteLine(response);
         this.WriteLine();
     }
@@ -488,7 +499,6 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
      * @param text The line to write.
      */
     private void WriteLine(String text) {
-        mPartialView.setText(text);
         //this._logText.append(text + "\n");
     }
 
@@ -730,6 +740,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         Message movie = new Message(message, "Action & Adventure", "2015");
         movieList.add(movie);
         mAdapter.notifyDataSetChanged();
+        recyclerView.scrollToPosition(movieList.size() - 1);
     }
 
     @Override
@@ -777,35 +788,6 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         }
         else
             mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-    }
-    private class ASHelpWebViewClient extends WebViewClient
-    {
-        public boolean shouldOverrideUrlLoading(WebView view, String url)
-        {
-            return false;
-        }
-
-        @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon)
-        {
-            showProgress(true);
-            super.onPageStarted(view, url, favicon);
-        }
-
-        @Override
-        public void onPageFinished(WebView view, String url)
-        {
-            showProgress(false);
-            super.onPageFinished(view, url);
-        }
-
-        @Override
-        public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error)
-        {
-            Log.d("shrasti", "error" + error);
-            showProgress(false);
-            super.onReceivedError(view, request, error);
-        }
     }
 
     @Override
@@ -867,49 +849,6 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
             mProgressDialog.dismiss();
         }
         super.onDestroy();
-    }
-
-    class StyleCallback implements ActionMode.Callback {
-
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            Log.d(Tag, "onCreateActionMode");
-            MenuInflater inflater = mode.getMenuInflater();
-            inflater.inflate(R.menu.custom_options, menu);
-            menu.removeItem(android.R.id.selectAll);
-            return true;
-        }
-
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            Log.d(Tag, String.format("onActionItemClicked item=%s/%d", item.toString(), item.getItemId()));
-            CharacterStyle cs;
-            int start = finalMessageView.getSelectionStart();
-            int end = finalMessageView.getSelectionEnd();
-            SpannableStringBuilder ssb = new SpannableStringBuilder(finalMessageView.getText());
-
-            switch(item.getItemId()) {
-
-                case R.id.search:
-                    String selectedText = finalMessageView.getText().toString().substring(start, end);
-                    Log.d(Tag, "the search query is " + selectedText);
-                    launchBottomSheet(selectedText);
-                    return true;
-
-                case R.id.addToTaskList:
-                    cs = new StyleSpan(Typeface.ITALIC);
-                    ssb.setSpan(cs, start, end, 1);
-                    finalMessageView.setText(ssb);
-                    return true;
-            }
-            return false;
-        }
-
-        public void onDestroyActionMode(ActionMode mode) {
-
-        }
     }
 
     private void createWebPrintJob(WebView webView) {
