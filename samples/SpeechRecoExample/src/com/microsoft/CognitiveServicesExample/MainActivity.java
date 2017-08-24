@@ -35,6 +35,7 @@ package com.microsoft.CognitiveServicesExample;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -88,6 +89,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -98,7 +100,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.microsoft.CognitiveServicesExample.R.id.listen_view;
 
-public class MainActivity extends AppCompatActivity implements ISpeechRecognitionServerEvents, MessageAdapter.MessageItemSelector, PreviewWebView.WebViewSocketListener
+public class MainActivity extends AppCompatActivity implements ISpeechRecognitionServerEvents, MessageAdapter.MessageItemSelector, PreviewWebView.WebViewSocketListener, Camera2BasicFragment.SuccessDataFromActivityListener
 {
     int m_waitSeconds = 0;
     private static String Tag = "HACKKK";
@@ -141,6 +143,14 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     public void addToOthersTask(String message)
     {
         //add to others task
+    }
+
+    @Override
+    public void onCaptureSuccess(String path)
+    {
+        Log.d(Tag, "exact path is " + path);
+        android.app.FragmentManager manager = this.getFragmentManager();
+        finishCameraFragment(manager, path);
     }
 
     public enum FinalResponseStatus { NotReceived, OK, Timeout }
@@ -589,93 +599,6 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     private void prepareMovieData() {
         Message movie = new Message("Mad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla bla", "Action & Adventure", "2015");
         movieList.add(movie);
-//
-//        movie = new Message("Inside Out", "Animation, Kids & Family", "2015");
-//        movieList.add(movie);
-//
-//        movie = new Message("Star Wars: Episode VII - The Force Awakens", "Action", "2015");
-//        movieList.add(movie);
-//
-//        movie = new Message("Shaun the Sheep", "Animation", "2015");
-//        movieList.add(movie);
-//
-//        movie = new Message("The Martian", "Science Fiction & Fantasy", "2015");
-//        movieList.add(movie);
-//
-//        movie = new Message("Mission: Impossible Rogue Nation", "Action", "2015");
-//        movieList.add(movie);
-//
-//        movie = new Message("Up", "Animation", "2009");
-//        movieList.add(movie);
-//
-//        movie = new Message("Star Trek", "Science Fiction", "2009");
-//        movieList.add(movie);
-//
-//        movie = new Message("The LEGO Movie", "Animation", "2014");
-//        movieList.add(movie);
-//
-//        movie = new Message("Iron Man", "Action & Adventure", "2008");
-//        movieList.add(movie);
-//
-//        movie = new Message("Aliens", "Science Fiction", "1986");
-//        movieList.add(movie);
-//
-//        movie = new Message("Chicken Run", "Animation", "2000");
-//        movieList.add(movie);
-//
-//        movie = new Message("Back to the Future", "Science Fiction", "1985");
-//        movieList.add(movie);
-//
-//        movie = new Message("Raiders of the Lost Ark", "Action & Adventure", "1981");
-//        movieList.add(movie);
-//
-//        movie = new Message("Goldfinger", "Action & Adventure", "1965");
-//        movieList.add(movie);
-//
-//        movie = new Message("Guardians of the Galaxy", "Science Fiction & Fantasy", "2014");
-//        movieList.add(movie);
-//
-//        movie = new Message("The LEGO Movie", "Animation", "2014");
-//        movieList.add(movie);
-//
-//        movie = new Message("Iron Man", "Action & Adventure", "2008");
-//        movieList.add(movie);
-//
-//        movie = new Message("Aliens", "Science Fiction", "1986");
-//        movieList.add(movie);
-//
-//        movie = new Message("Chicken Run", "Animation", "2000");
-//        movieList.add(movie);
-//
-//        movie = new Message("Back to the Future", "Science Fiction", "1985");
-//        movieList.add(movie);
-//
-//        movie = new Message("Raiders of the Lost Ark", "Action & Adventure", "1981");
-//        movieList.add(movie);
-//
-//        movie = new Message("Goldfinger", "Action & Adventure", "1965");
-//        movieList.add(movie);
-//
-//        movie = new Message("Guardians of the Galaxy", "Science Fiction & Fantasy", "2014");
-//        movieList.add(movie);
-//        movie = new Message("Aliens", "Science Fiction", "1986");
-//        movieList.add(movie);
-//
-//        movie = new Message("Chicken Run", "Animation", "2000");
-//        movieList.add(movie);
-//
-//        movie = new Message("Back to the Future", "Science Fiction", "1985");
-//        movieList.add(movie);
-//
-//        movie = new Message("Raiders of the Lost Ark", "Action & Adventure", "1981");
-//        movieList.add(movie);
-//
-//        movie = new Message("Goldfinger", "Action & Adventure", "1965");
-//        movieList.add(movie);
-//
-//        movie = new Message("Guardians of the Galaxy", "Science Fiction & Fantasy", "2014");
-//        movieList.add(movie);
-
         mAdapter.notifyDataSetChanged();
     }
 
@@ -697,13 +620,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 //startRestTestActivity();
                 return true;
             case R.id.goback:
-                int fragmentCount = manager.getBackStackEntryCount();
-                if ( fragmentCount > 0) {
-                    FragmentTransaction trans = manager.beginTransaction();
-                    trans.remove(mCameraFrg);
-                    trans.commit();
-                    manager.popBackStack();
-                }
+                finishCameraFragment(manager, null);
                 return true;
             case R.id.add_newItem:
                 new LongOperation(finalMessageView.getText().toString()).execute("");
@@ -726,6 +643,20 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void finishCameraFragment(FragmentManager manager, String path)
+    {
+        if(path != null) {
+            addImage(path);
+        }
+        int fragmentCount = manager.getBackStackEntryCount();
+        if ( fragmentCount > 0) {
+            FragmentTransaction trans = manager.beginTransaction();
+            trans.remove(mCameraFrg);
+            trans.commit();
+            manager.popBackStack();
         }
     }
 
@@ -793,9 +724,16 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     @Override
     public void onBackPressed()
     {
+        android.app.FragmentManager manager = this.getFragmentManager();
+                FragmentTransaction trans = manager.beginTransaction();
+        int fragmentCount = manager.getBackStackEntryCount();
         if (mWebView.canGoBack())
         {
             mWebView.goBack();
+        }
+        else if (fragmentCount > 0) {
+                Log.d(Tag, "handling backpress");
+                manager.popBackStack();
         }
         else
         {
@@ -868,10 +806,27 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     private void addImage(String path)
     {
         String base = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
-        Log.d(Tag, "image path is " + base);
-        base = "/storage/emulated/0/Pictures/Screenshots";
-        String imagePath = "file://"+ base + "/test.png";
-        finalTextInWebView.loadUrl("javascript:appendImage('" + imagePath + "')");
+//        Log.d(Tag, "image path is " + base);
+//        base = "/storage/emulated/0/Pictures/Screenshots";
+//        Bitmap bm = BitmapFactory.decodeFile(path);
+//        Log.d(Tag, "bitmap is" + bm);
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        bm.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+//        byte[] b = baos.toByteArray();
+//        String encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+//        Log.d(Tag, "encoded data is " + encodedImage);
+//        String imagePath = "file://"+ path;
+        Log.d(Tag, "data:image/png;base64" + path);
+        File file = new File(path);
+        if(file.exists()) {
+            Log.d("shrasti", "fileexists");
+        }
+        while (!file.exists()) {
+            Log.d("shrasti", "hello");
+            Log.d("shrasti",  "file exists and size is " + file.length());
+        }
+        Log.d("shrasti", "done");
+        finalTextInWebView.loadUrl("javascript:appendImage('" + path + "')");
     }
 
 
