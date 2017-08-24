@@ -41,11 +41,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
@@ -70,6 +72,13 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.NaturalLanguageUnderstanding;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.AnalysisResults;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.AnalyzeOptions;
@@ -86,6 +95,7 @@ import com.microsoft.cognitiveservices.speechrecognition.SpeechRecognitionMode;
 import com.microsoft.cognitiveservices.speechrecognition.SpeechRecognitionServiceFactory;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -95,7 +105,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.microsoft.CognitiveServicesExample.R.id.listen_view;
@@ -616,11 +628,12 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         switch (item.getItemId()) {
             case R.id.test_api:
                 //launchBottomSheet("hello");
-                //startRestTestActivity();
+                startRestTestActivity();
                 //startRestTestActivity();
                 return true;
-            case R.id.goback:
-                finishCameraFragment(manager, null);
+            case R.id.send_mail:
+                sendMail();
+                //finishCameraFragment(manager, null);
                 return true;
             case R.id.add_newItem:
                 new LongOperation(finalMessageView.getText().toString()).execute("");
@@ -644,6 +657,77 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void sendMail()
+    {
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        final String authToken = pref.getString("MYACCESSTOKEN", "");
+        final String URL = "https://graph.microsoft.com/beta/me/outlook/tasks";
+        // Post params to be sent to the server
+        JSONObject params = new JSONObject();
+        JSONObject time2 = new JSONObject();
+        JSONObject time1 = new JSONObject();
+        JSONObject body = new JSONObject();
+
+        try
+        {
+            params.put("assignedTo", "shrbansa@adobe.com");
+            params.put("subject", "testshivani");
+
+            time1.put("dateTime", "2017-10-03T09:00:00");
+            time1.put("timeZone", "Eastern Standard Time");
+
+            time2.put("dateTime", "2016-10-05T16:00:00");
+            time2.put("timeZone", "Eastern Standard Time");
+
+            params.put("startDateTime", time1);
+            params.put("dueDateTime", time2);
+
+            body.put("content", "dummy");
+            body.put("contentType", "Text");
+
+            params.put("body", body);
+        }
+
+        catch (Exception e)
+        {
+
+        }
+
+
+        JsonObjectRequest req = new JsonObjectRequest(URL, params,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.d("HACK", "response " + response);
+                            VolleyLog.v("Response:%n %s", response.toString(4));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("Error: ", error.getMessage());
+            }
+        })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError
+            {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("Authorization", authToken);
+                return params;
+            }
+
+
+        };
+
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(req);
     }
 
     private void finishCameraFragment(FragmentManager manager, String path)

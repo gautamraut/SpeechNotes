@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/test_api"
           android:icon="@drawable/accept_icon"
-          android:title="TestAPI"
+          android:title="Configure Outlook"
           android:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/goback"
+    <item android:id="@+id/send_mail"
         android:icon="@drawable/accept_icon"
-        android:title="goback"
+        android:title="send mail"
         android:showAsAction="ifRoom"/>
 
     <item android:id="@+id/add_newItem"
