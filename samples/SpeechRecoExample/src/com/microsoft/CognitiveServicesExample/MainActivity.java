@@ -40,16 +40,17 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -74,6 +75,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.NaturalLanguageUnderstanding;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.AnalysisResults;
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     private ProgressDialog mProgressDialog;
     private Fragment mCameraFrg;
     private WebView finalTextInWebView;
+    private TextView mPartialView;
 
     final static String apiKey = "AIzaSyBQY-XSNnYezYpoiUTb9kCIDAnklH4H2kE";
     final static String customSearchEngineKey = "017444164145125540543:pexazkna2qu";
@@ -226,6 +229,10 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE))
+            { WebView.setWebContentsDebuggingEnabled(true); }
+        }
 
         mActivity = this;
         //this._logText = (EditText) findViewById(R.id.editText1);
@@ -286,6 +293,9 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         finalTextInWebView.setHorizontalScrollBarEnabled(false);
 
         finalTextInWebView.loadUrl("file:///android_asset/text.html");
+
+
+        mPartialView = (TextView)findViewById(R.id.partialResult);
 
         prepareMovieData();
 
@@ -475,6 +485,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
      * @param text The line to write.
      */
     private void WriteLine(String text) {
+        mPartialView.setText(text);
         //this._logText.append(text + "\n");
     }
 
@@ -669,7 +680,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         switch (item.getItemId()) {
             case R.id.test_api:
                 //launchBottomSheet("hello");
-                startRestTestActivity();
+                //startRestTestActivity();
                 //startRestTestActivity();
                 return true;
             case R.id.goback:

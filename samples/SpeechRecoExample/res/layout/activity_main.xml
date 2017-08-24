@@ -29,21 +29,14 @@
             android:layout_alignParentTop="true"
             android:text="Start" />
 
-        <!--<EditText-->
-        <!--android:id="@+id/editText1"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="fill_parent"-->
-        <!--android:layout_below="@+id/button1"-->
-        <!--android:ems="10"-->
-        <!--android:inputType="textMultiLine|textNoSuggestions"-->
-        <!--android:textSize="15dp" />-->
-
         <WebView
             android:id="@+id/finalTextInWebView"
             android:layout_width="match_parent"
-            android:layout_height="400dp">
+            android:layout_height="0dp"
+            android:layout_weight="2">
 
         </WebView>
+
         <EditText
             android:visibility="gone"
             android:paddingBottom="40px"
@@ -55,31 +48,37 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:inputType="textMultiLine"
-            android:layout_height="400dp" />
-
-        <!--</ScrollView>-->
-        <!--<FrameLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="400px">-->
-
-        <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="0000"-->
-        <!--android:visibility="invisible" />-->
-
-        <!--<EditText-->
-        <!--android:id="@+id/finalText"-->
-        <!--android:inputType="text"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"/>-->
-        <!--</FrameLayout>-->
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:scrollbars="vertical"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="4"
             android:layout_width="match_parent" />
+
+        <LinearLayout
+            android:background="@drawable/partial_result_boundary"
+            android:padding="10dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:textColor="@color/white"
+                android:textSize="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Listening..."/>
+
+            <TextView
+                android:textColor="@color/white"
+                android:id="@+id/partialResult"
+                android:textSize="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
     </LinearLayout>
     </FrameLayout>
 
