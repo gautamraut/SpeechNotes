@@ -70,6 +70,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -126,7 +127,10 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     MicrophoneRecognitionClient micClient = null;
     FinalResponseStatus isReceivedResponse = FinalResponseStatus.NotReceived;
     //EditText _logText;
-    Button _startButton;
+    ImageButton _startButton;
+    ImageButton _stopButton;
+    ImageButton _cameraButton;
+    ImageButton _doneButton;
     private RecyclerView recyclerView;
 
     private MessageAdapter mAdapter;
@@ -276,8 +280,61 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         }
 
         mActivity = this;
+
+        listenView = (LinearLayout)findViewById(listen_view);
         //this._logText = (EditText) findViewById(R.id.editText1);
-        this._startButton = (Button) findViewById(R.id.button1);
+        this._startButton = (ImageButton) findViewById(R.id.button1);
+        this._stopButton = (ImageButton) findViewById(R.id.stopRecord);
+        this._cameraButton = (ImageButton) findViewById(R.id.startCamera);
+        this._doneButton = (ImageButton) findViewById(R.id.doneRecord);
+
+        this._stopButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                //set click for stop
+                micClient.endMicAndRecognition();
+                _stopButton.setVisibility(View.GONE);
+                _startButton.setVisibility(View.VISIBLE);
+                listenView.setVisibility(View.GONE);
+            }
+        });
+
+        this._cameraButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                //set click for camera
+                android.app.FragmentManager manager = mActivity.getFragmentManager();
+                mCameraFrg = Camera2BasicFragment.newInstance();
+                FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                fragmentTransaction.add(R.id.container, mCameraFrg);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                manager.executePendingTransactions();
+
+            }
+        });
+
+        this._doneButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                //set click for stop
+                finalTextInWebView.evaluateJavascript("(function(){return document.getElementById('main-container').innerHTML})()",
+                        new ValueCallback<String>()
+                        {
+                            @Override
+                            public void onReceiveValue(String value)
+                            {
+                                Log.v(Tag, "SELECTION:" + StringEscapeUtils.unescapeJava(value));
+                                String Title = StringEscapeUtils.unescapeJava(value);
+                                DataAcrossActivity.getInstance().setNotes(StringEscapeUtils.unescapeJava(value));
+                                Intent intent = new Intent(mActivity, Preview.class);
+                                mActivity.startActivity(intent);
+                            }
+                        });
+                //finalTextInWebView.loadUrl("javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML");
+
+            }
+        });
 
         if (getString(R.string.primaryKey).startsWith("Please")) {
             new AlertDialog.Builder(this)
@@ -293,6 +350,9 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
             @Override
             public void onClick(View arg0) {
                 This.StartButton_Click(arg0);
+                _stopButton.setVisibility(View.VISIBLE);
+                _startButton.setVisibility(View.GONE);
+                listenView.setVisibility(View.VISIBLE);
             }
         });
 
@@ -332,7 +392,6 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
 
         //finalTextInWebView.addJavascriptInterface(new MyJavaScriptWebViewInterface(), "HTMLOUT");
 
-        listenView = (LinearLayout)findViewById(listen_view);
 
         mPartialView = (TextView)findViewById(R.id.partialResult);
         mPartialView.setMovementMethod(new ScrollingMovementMethod());
@@ -561,11 +620,11 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     }
 
     /*
-     * Speech recognition with data (for example from a file or audio source).
+     * Speech recognition with data (for example from a file or audio source).  
      * The data is broken up into buffers and each buffer is sent to the Speech Recognition Service.
      * No modification is done to the buffers, so the user can apply their
      * own VAD (Voice Activation Detection) or Silence Detection
-     *
+     * 
      * @param dataClient
      * @param recoMode
      * @param filename
@@ -586,8 +645,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
             try {
                 // Note for wave files, we can just send data from the file right to the server.
                 // In the case you are not an audio file in wave format, and instead you have just
-                // raw data (for example audio coming over bluetooth), then before sending up any
-                // audio data, you must first send up an SpeechAudioFormat descriptor to describe
+                // raw data (for example audio coming over bluetooth), then before sending up any 
+                // audio data, you must first send up an SpeechAudioFormat descriptor to describe 
                 // the layout and format of your raw audio data via DataRecognitionClient's sendAudioFormat() method.
                 // String filename = recoMode == SpeechRecognitionMode.ShortPhrase ? "whatstheweatherlike.wav" : "batman.wav";
                 InputStream fileStream = getAssets().open(filename);
@@ -599,7 +658,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                     bytesRead = fileStream.read(buffer);
 
                     if (bytesRead > -1) {
-                        // Send of audio data to service.
+                        // Send of audio data to service. 
                         dataClient.sendAudio(buffer, bytesRead);
                     }
                 } while (bytesRead > 0);
@@ -652,38 +711,6 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 //launchBottomSheet("hello");
                 startRestTestActivity();
                 //startRestTestActivity();
-                return true;
-            case R.id.send_mail:
-                //sendMail();
-                //finishCameraFragment(manager, null);
-                return true;
-//            case R.id.add_newItem:
-//                return true;
-            case R.id.launch_camera:
-                mCameraFrg = Camera2BasicFragment.newInstance();
-                FragmentTransaction fragmentTransaction = manager.beginTransaction();
-                fragmentTransaction.add(R.id.container, mCameraFrg);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                manager.executePendingTransactions();
-                return true;
-            case R.id.done:
-                //finalTextInWebView.loadUrl("javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML");
-                finalTextInWebView.evaluateJavascript("(function(){return document.getElementById('main-container').textContent })()",
-                        new ValueCallback<String>()
-                        {
-                            @Override
-                            public void onReceiveValue(String value)
-                            {
-                                Log.v(Tag, "SELECTION:" + value);
-                                new KeyWordLongOperation(value).execute("");
-                                showProgress(true);
-                            }
-                        });
-                return true;
-            case R.id.saveAsPdf:
-                //createWebPrintJob(finalTextInWebView);
-                addImage("nn");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -1179,7 +1206,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                                 DataAcrossActivity.getInstance().setNotes(StringEscapeUtils.unescapeJava(value));
                                 Intent intent = new Intent(mActivity, Preview.class);
                                 startActivity(intent);
-                            }
+            }
                         });
             }
         }

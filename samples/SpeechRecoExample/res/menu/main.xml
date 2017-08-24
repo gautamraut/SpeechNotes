@@ -5,29 +5,4 @@
           android:title="Configure Outlook"
           android:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/send_mail"
-        android:icon="@drawable/accept_icon"
-        android:title="send mail"
-        android:showAsAction="ifRoom"/>
-
-    <item android:id="@+id/add_newItem"
-          android:icon="@drawable/accept_icon"
-          android:title="TestAPI"
-          android:showAsAction="ifRoom"/>
-
-    <item android:id="@+id/launch_camera"
-        android:icon="@drawable/accept_icon"
-        android:title="Camera"
-        android:showAsAction="ifRoom"/>
-
-    <item android:id="@+id/done"
-        android:icon="@drawable/accept_icon"
-        android:title="Done"
-        android:showAsAction="ifRoom"/>
-
-    <item android:id="@+id/saveAsPdf"
-          android:icon="@drawable/accept_icon"
-          android:title="TestAPI"
-          android:showAsAction="ifRoom"/>
-
 </menu>
