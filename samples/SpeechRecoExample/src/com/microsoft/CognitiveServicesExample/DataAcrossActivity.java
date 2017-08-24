@@ -1,7 +1,6 @@
 package com.microsoft.CognitiveServicesExample;
 
 import com.microsoft.CognitiveServicesExample.model.Message;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +18,9 @@ public class DataAcrossActivity
     public static List<Message> movieList = new ArrayList<>();
 
     // variable of type String
-    public String notes;
+    private String notes;
+    private String references;
+    private String search_results;
 
     // private constructor restricted to this class itself
     private DataAcrossActivity()
@@ -38,11 +39,30 @@ public class DataAcrossActivity
     }
 
     public void setNotes(String s){
-        notes = s;
+        if(s.length() > 2)
+            notes = s.substring(1,s.length()-2);
+        else
+            notes = s;
     }
 
     public String getNotes(){
         return notes;
+    }
+
+    public void setRef(String s){
+        references = s;
+    }
+
+    public String getRef(){
+        return references;
+    }
+
+    public void setSearch_res(String s){
+        search_results = s;
+    }
+
+    public String getSearch_res(){
+        return search_results;
     }
 
     public Map<String,String> getActionItemMap(){

@@ -113,7 +113,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.microsoft.CognitiveServicesExample.DataAcrossActivity.movieList;
+import okhttp3.OkHttpClient;
+
 import static com.microsoft.CognitiveServicesExample.R.id.listen_view;
+import static com.microsoft.CognitiveServicesExample.R.id.text;
 
 public class MainActivity extends AppCompatActivity implements ISpeechRecognitionServerEvents, MessageAdapter.MessageItemSelector, PreviewWebView.WebViewSocketListener, Camera2BasicFragment.SuccessDataFromActivityListener
 {
@@ -558,11 +561,11 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     }
 
     /*
-     * Speech recognition with data (for example from a file or audio source).  
+     * Speech recognition with data (for example from a file or audio source).
      * The data is broken up into buffers and each buffer is sent to the Speech Recognition Service.
      * No modification is done to the buffers, so the user can apply their
      * own VAD (Voice Activation Detection) or Silence Detection
-     * 
+     *
      * @param dataClient
      * @param recoMode
      * @param filename
@@ -583,8 +586,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
             try {
                 // Note for wave files, we can just send data from the file right to the server.
                 // In the case you are not an audio file in wave format, and instead you have just
-                // raw data (for example audio coming over bluetooth), then before sending up any 
-                // audio data, you must first send up an SpeechAudioFormat descriptor to describe 
+                // raw data (for example audio coming over bluetooth), then before sending up any
+                // audio data, you must first send up an SpeechAudioFormat descriptor to describe
                 // the layout and format of your raw audio data via DataRecognitionClient's sendAudioFormat() method.
                 // String filename = recoMode == SpeechRecognitionMode.ShortPhrase ? "whatstheweatherlike.wav" : "batman.wav";
                 InputStream fileStream = getAssets().open(filename);
@@ -596,7 +599,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                     bytesRead = fileStream.read(buffer);
 
                     if (bytesRead > -1) {
-                        // Send of audio data to service. 
+                        // Send of audio data to service.
                         dataClient.sendAudio(buffer, bytesRead);
                     }
                 } while (bytesRead > 0);
@@ -651,12 +654,11 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 //startRestTestActivity();
                 return true;
             case R.id.send_mail:
-                sendMail();
+                //sendMail();
                 //finishCameraFragment(manager, null);
                 return true;
-            case R.id.add_newItem:
-                new LongOperation(finalMessageView.getText().toString()).execute("");
-                return true;
+//            case R.id.add_newItem:
+//                return true;
             case R.id.launch_camera:
                 mCameraFrg = Camera2BasicFragment.newInstance();
                 FragmentTransaction fragmentTransaction = manager.beginTransaction();
@@ -666,20 +668,18 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 manager.executePendingTransactions();
                 return true;
             case R.id.done:
-                finalTextInWebView.evaluateJavascript("(function(){return document.getElementById('main-container').innerHTML})()",
+                //finalTextInWebView.loadUrl("javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML");
+                finalTextInWebView.evaluateJavascript("(function(){return document.getElementById('main-container').textContent })()",
                         new ValueCallback<String>()
                         {
                             @Override
                             public void onReceiveValue(String value)
                             {
-                                Log.v(Tag, "SELECTION:" + StringEscapeUtils.unescapeJava(value));
-                                String Title = StringEscapeUtils.unescapeJava(value);
-                                DataAcrossActivity.getInstance().setNotes(StringEscapeUtils.unescapeJava(value));
-                                Intent intent = new Intent(mActivity, Preview.class);
-                                startActivity(intent);
+                                Log.v(Tag, "SELECTION:" + value);
+                                new KeyWordLongOperation(value).execute("");
+                                showProgress(true);
                             }
                         });
-                //finalTextInWebView.loadUrl("javascript:window.HTMLOUT.processHTML(document.getElementsByTagName('html')[0].innerHTML");
                 return true;
             case R.id.saveAsPdf:
                 //createWebPrintJob(finalTextInWebView);
@@ -690,76 +690,6 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         }
     }
 
-    private void sendMail()
-    {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
-        final String authToken = pref.getString("MYACCESSTOKEN", "");
-        final String URL = "https://graph.microsoft.com/beta/me/outlook/tasks";
-        // Post params to be sent to the server
-        JSONObject params = new JSONObject();
-        JSONObject time2 = new JSONObject();
-        JSONObject time1 = new JSONObject();
-        JSONObject body = new JSONObject();
-
-        try
-        {
-            params.put("assignedTo", "shrbansa@adobe.com");
-            params.put("subject", "testshivani");
-
-            time1.put("dateTime", "2017-10-03T09:00:00");
-            time1.put("timeZone", "Eastern Standard Time");
-
-            time2.put("dateTime", "2016-10-05T16:00:00");
-            time2.put("timeZone", "Eastern Standard Time");
-
-            params.put("startDateTime", time1);
-            params.put("dueDateTime", time2);
-
-            body.put("content", "dummy");
-            body.put("contentType", "Text");
-
-            params.put("body", body);
-        }
-
-        catch (Exception e)
-        {
-
-        }
-
-
-        JsonObjectRequest req = new JsonObjectRequest(URL, params,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            Log.d("HACK", "response " + response);
-                            VolleyLog.v("Response:%n %s", response.toString(4));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("Error: ", error.getMessage());
-            }
-        })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("Authorization", authToken);
-                return params;
-            }
-
-
-        };
-
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(req);
-    }
 
     private void finishCameraFragment(FragmentManager manager, String path)
     {
@@ -1032,6 +962,30 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         return toSearch;
     }
 
+    public String SimplePostRequestTest(String keyWords)
+    {
+        OkHttpClient client = new OkHttpClient();
+        String serverURL = "http://10.41.56.150:5555/hack_uploader";
+        try {
+            serverURL += "?Keywords=" + keyWords;
+            URL url = new URL(serverURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            String line;
+            StringBuffer buffer = new StringBuffer();
+            while ((line = br.readLine()) != null) {
+                buffer.append(line);
+            }
+            return buffer.toString();
+
+        } catch (Exception ex) {
+            System.out.println("call failed");
+        }
+        return "";
+    }
+
+
     private class LongOperation extends AsyncTask<String, Void, String> {
 
         private String mData;
@@ -1094,6 +1048,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
 
                 }
 
+
+
             } catch (Exception e) {
             }
 
@@ -1145,13 +1101,14 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                     "3hQQK6RE11eP"
             );
 
-            String text = "IBM is an American multinational technology " +
-                    "company headquartered in Armonk, New York, " +
-                    "United States, with operations in over 170 countries.";
+            //String text = "IBM is an American multinational technology " +
+            //"company headquartered in Armonk, New York, " +
+            //        "United States, with operations in over 170 countries.";
+            String text = mData;
 
             //text = mData;
             // ConceptsOptions conceptsOp = new ConceptsOptions.Builder().limit(3).build();
-            KeywordsOptions keywordsOp = new KeywordsOptions.Builder().limit(10).build();
+            KeywordsOptions keywordsOp = new KeywordsOptions.Builder().limit(5).build();
             Features features = new Features.Builder().keywords(keywordsOp).build();
 
             AnalyzeOptions parameters = new AnalyzeOptions.Builder().text(text).features(features).build();
@@ -1165,7 +1122,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                     String res = keywordsObject.getString("text");
                     Log.d("text", res);
 
-                    String url = buildSearchString(res, 1, 2);
+                    String url = buildSearchString(res, 1, 1);
                     String urlResults = search(url);
                     System.out.println(urlResults);
                     int fromIndex = 0, len = urlResults.length();
@@ -1191,6 +1148,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                     }
 
                 }
+                String searchResults =  SimplePostRequestTest("Android");
+                DataAcrossActivity.getInstance().setSearch_res(searchResults);
 
             } catch (Exception e) {
             }
@@ -1205,15 +1164,24 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
             //txt.setText("Executed"); // txt.setText(result);
             // might want to change "executed" for the returned string passed
             // into onPostExecute() but that is upto you
-            System.out.println("InPostExecute");
-            System.out.println(result);
-            String[] splitString = result.split(";");
 
-            for (int i = 0; i < splitString.length; i++) {
-                finalMessageView.append(splitString[i]);
-                finalMessageView.append("\n");
+            DataAcrossActivity.getInstance().setRef(result);
+            showProgress(false);
+            if(!mProgressDialog.isShowing()){
+                finalTextInWebView.evaluateJavascript("(function(){return document.getElementById('main-container').innerHTML})()",
+                        new ValueCallback<String>()
+                        {
+                            @Override
+                            public void onReceiveValue(String value)
+                            {
+                                Log.v(Tag, "SELECTION:" + StringEscapeUtils.unescapeJava(value));
+                                String Title = StringEscapeUtils.unescapeJava(value);
+                                DataAcrossActivity.getInstance().setNotes(StringEscapeUtils.unescapeJava(value));
+                                Intent intent = new Intent(mActivity, Preview.class);
+                                startActivity(intent);
+                            }
+                        });
             }
-
         }
 
         @Override
