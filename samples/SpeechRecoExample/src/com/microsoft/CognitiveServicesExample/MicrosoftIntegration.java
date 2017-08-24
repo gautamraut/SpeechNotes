@@ -40,7 +40,7 @@ import java.util.Map;
 public class MicrosoftIntegration extends AppCompatActivity
 {
 
-	final static String SCOPES [] = {"https://graph.microsoft.com/User.Read","https://graph.microsoft.com/Tasks.ReadWrite"};
+	final static String SCOPES [] = {"https://graph.microsoft.com/User.Read","https://graph.microsoft.com/Tasks.ReadWrite","https://graph.microsoft.com/Mail.Send"};
 	final static String MSGRAPH_URL = "https://graph.microsoft.com/v1.0/me";
 	final static String CLIENT_ID = "f3a71281-457e-43b3-a4cd-8ba3846e7759";
 
@@ -216,7 +216,7 @@ public class MicrosoftIntegration extends AppCompatActivity
 		Log.d("Hack", "auth token is " + authResult.getAccessToken());
 		SharedPreferences.Editor prefEditor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		prefEditor.putString("MYACCESSTOKEN", authResult.getAccessToken());
-		prefEditor.apply();
+		prefEditor.commit();
 
 //		String URL = "https://graph.microsoft.com/beta/me/outlook/tasks";
 //		StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,

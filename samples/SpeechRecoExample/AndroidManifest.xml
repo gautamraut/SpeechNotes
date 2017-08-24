@@ -37,6 +37,20 @@
             </intent-filter>
         </activity>
         <activity android:name=".Preview"></activity>
+        <activity android:name=".MicrosoftIntegration"></activity>
+        <activity
+            android:name="com.microsoft.identity.client.BrowserTabActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!--Add in your scheme/host from registered redirect URI-->
+                <!--By default, the scheme should be similar to 'msal[appId]' -->
+                <data android:scheme="msalf3a71281-457e-43b3-a4cd-8ba3846e7759"
+                      android:host="auth" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
