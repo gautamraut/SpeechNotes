@@ -36,7 +36,6 @@ public class ActionListAdapter extends RecyclerView.Adapter<ActionListAdapter.My
 
 
     public ActionListAdapter() {
-
         Set<String> keys = DataAcrossActivity.getInstance().getActionItemMap().keySet();
         arraykey = keys.toArray(new String[keys.size()]);
     }

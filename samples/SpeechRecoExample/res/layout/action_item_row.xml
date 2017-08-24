@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:card_view="http://schemas.android.com/apk/res-auto"
               xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:background="@null"
+              android:background="@drawable/action_item_boundary"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
 

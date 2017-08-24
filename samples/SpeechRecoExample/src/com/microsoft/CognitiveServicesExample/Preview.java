@@ -43,6 +43,7 @@ public class Preview extends AppCompatActivity {
                                 viewPager.setCurrentItem(0);
                                 break;
                             case R.id.action_chat:
+                                actionItemsFragment.notifyChange();
                                 viewPager.setCurrentItem(1);
                                 break;
                             case R.id.action_contact:

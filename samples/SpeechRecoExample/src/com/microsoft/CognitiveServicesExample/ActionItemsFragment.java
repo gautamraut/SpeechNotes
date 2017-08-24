@@ -2,6 +2,8 @@ package com.microsoft.CognitiveServicesExample;
 
 
 import android.content.SharedPreferences;
+import android.content.Context;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -131,6 +133,8 @@ public class ActionItemsFragment extends Fragment {
 
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
+
+        Log.d("HACK", "onViewCreated");
         // Inflate the layout for this fragment
         recyclerView = (RecyclerView) getView().findViewById(R.id.actionListView);
         mAdapter = new ActionListAdapter();
@@ -156,5 +160,24 @@ public class ActionItemsFragment extends Fragment {
                 sendMail(mailcontent);
             }
         });
+    }
+
+    @Override
+    public void onResume()
+    {
+        Log.d("HACK", "onViewCreated onResume");
+        super.onResume();
+    }
+
+    @Override
+    public void onAttach(Context context)
+    {
+        Log.d("HACK", "onViewCreated onResume");
+        super.onAttach(context);
+    }
+
+    public void notifyChange() {
+        mAdapter = new ActionListAdapter();
+        recyclerView.setAdapter(mAdapter);
     }
 }
