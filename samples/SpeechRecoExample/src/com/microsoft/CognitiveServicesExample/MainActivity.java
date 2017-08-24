@@ -65,6 +65,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -84,6 +85,7 @@ import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.An
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.AnalyzeOptions;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.ConceptsOptions;
 import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.Features;
+import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.KeywordsOptions;
 import com.microsoft.CognitiveServicesExample.model.Message;
 import com.microsoft.bing.speech.SpeechClientStatus;
 import com.microsoft.cognitiveservices.speechrecognition.DataRecognitionClient;
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     public void addToOthersTask(String message)
     {
         //add to others task
+        new ActionItem("Shefali is assigned MA work.").execute("");
     }
 
     @Override
@@ -324,6 +327,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
 
         finalTextInWebView.loadUrl("file:///android_asset/text.html");
 
+        finalTextInWebView.addJavascriptInterface(new MyJavaScriptWebViewInterface(), "HTMLOUT");
 
         listenView = (LinearLayout)findViewById(listen_view);
 
@@ -621,6 +625,18 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         return true;
     }
 
+    class MyJavaScriptWebViewInterface
+    {
+        @JavascriptInterface
+        @SuppressWarnings("unused")
+        public void processHTML(String html)
+        {
+            // process the html as needed by the app
+            DataAcrossActivity.getInstance().setNotes(html);
+        }
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -639,14 +655,16 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 new LongOperation(finalMessageView.getText().toString()).execute("");
                 return true;
             case R.id.launch_camera:
-                mCameraFrg = Camera2BasicFragment.newInstance();
-                FragmentTransaction fragmentTransaction = manager.beginTransaction();
-                fragmentTransaction.add(R.id.container, mCameraFrg);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                manager.executePendingTransactions();
+                new ActionItem("Shefali is assigned MA work.").execute("");
+//                mCameraFrg = Camera2BasicFragment.newInstance();
+//                FragmentTransaction fragmentTransaction = manager.beginTransaction();
+//                fragmentTransaction.add(R.id.container, mCameraFrg);
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+//                manager.executePendingTransactions();
                 return true;
             case R.id.done:
+                finalTextInWebView.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
                 Intent intent = new Intent(this, Preview.class);
                 startActivity(intent);
                 return true;
@@ -1033,6 +1051,104 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 for (int i = 0; i < concepts.length(); i++) {
                     JSONObject conceptsObject = concepts.getJSONObject(i);
                     String res = conceptsObject.getString("text");
+                    Log.d("text", res);
+
+                    String url = buildSearchString(res, 1, 2);
+                    String urlResults = search(url);
+                    System.out.println(urlResults);
+                    int fromIndex = 0, len = urlResults.length();
+                    while (fromIndex < len) {
+                        int foundIndex = urlResults.indexOf("\"link\"", fromIndex);
+                        System.out.println("Index= " + foundIndex);
+                        if (foundIndex == -1)
+                            break;
+                        else {
+
+                            int delimitIndex = urlResults.indexOf(",", foundIndex);
+                            System.out.println("DelimitIndex= " + delimitIndex);
+                            if (delimitIndex < len) {
+                                //System.out.println("TempURL= "+ result.substring(foundIndex +9, delimitIndex -1));
+                                outputURL = outputURL.concat(urlResults.substring(foundIndex + 9, delimitIndex - 1));
+                                outputURL = outputURL.concat(";");
+                                System.out.println("OutputURL= " + outputURL);
+                            }
+                        }
+
+                        fromIndex = foundIndex + 20;
+
+                    }
+
+                }
+
+            } catch (Exception e) {
+            }
+
+            //return "Executed";
+            return outputURL;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //TextView txt = (TextView) findViewById(R.id.output);
+            //txt.setText("Executed"); // txt.setText(result);
+            // might want to change "executed" for the returned string passed
+            // into onPostExecute() but that is upto you
+            System.out.println("InPostExecute");
+            System.out.println(result);
+            String[] splitString = result.split(";");
+
+            for (int i = 0; i < splitString.length; i++) {
+                finalMessageView.append(splitString[i]);
+                finalMessageView.append("\n");
+            }
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
+    }
+
+    private class KeyWordLongOperation extends AsyncTask<String, Void, String> {
+
+        private String mData;
+
+        KeyWordLongOperation(String data) {
+            mData = data;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String outputURL = "";
+            NaturalLanguageUnderstanding service = new NaturalLanguageUnderstanding(
+                    NaturalLanguageUnderstanding.VERSION_DATE_2017_02_27,
+                    "e418d864-c956-409f-b3c9-9061202cf4d2",
+                    "3hQQK6RE11eP"
+            );
+
+            String text = "IBM is an American multinational technology " +
+                    "company headquartered in Armonk, New York, " +
+                    "United States, with operations in over 170 countries.";
+
+            //text = mData;
+            // ConceptsOptions conceptsOp = new ConceptsOptions.Builder().limit(3).build();
+            KeywordsOptions keywordsOp = new KeywordsOptions.Builder().limit(10).build();
+            Features features = new Features.Builder().keywords(keywordsOp).build();
+
+            AnalyzeOptions parameters = new AnalyzeOptions.Builder().text(text).features(features).build();
+            AnalysisResults response = service.analyze(parameters).execute();
+            Log.d("features",response.toString());
+            try {
+                JSONObject result = new JSONObject(String.valueOf(response));
+                JSONArray keywords = result.getJSONArray("keywords");
+                for (int i = 0; i < keywords.length(); i++) {
+                    JSONObject keywordsObject = keywords.getJSONObject(i);
+                    String res = keywordsObject.getString("text");
                     Log.d("text", res);
 
                     String url = buildSearchString(res, 1, 2);

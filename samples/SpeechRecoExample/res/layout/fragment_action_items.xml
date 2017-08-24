@@ -5,18 +5,58 @@
     tools:context="com.microsoft.CognitiveServicesExample.ActionItemsFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tab2"
-        android:layout_centerInParent="true"
-        android:textSize="30sp" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/actionListView"
-        android:scrollbars="vertical"
-        android:layout_height="0dp"
-        android:layout_weight="4"
-        android:layout_width="match_parent" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <ImageButton
+            android:id="@+id/mail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="right"
+            android:background="@null"
+            android:padding="10px"
+            android:src="@drawable/mail"
+            android:text="Accept" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:paddingLeft="10px"
+                android:id="@+id/contact_heading"
+                android:text="Assignee"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_alignParentTop="true"
+                android:textColor="#222222"
+                android:textSize="16dp"/>
+
+            <TextView
+                android:paddingLeft="10px"
+                android:id="@+id/action_heading"
+                android:text="Action Item"
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:textColor="#222222"
+                android:textSize="16dp" />
+
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/actionListView"
+            android:scrollbars="vertical"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+
+    </LinearLayout>
 
 </RelativeLayout>

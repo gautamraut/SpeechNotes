@@ -6,4 +6,7 @@
 	<item android:id="@+id/addToTaskList"
 	      android:showAsAction="always"
 	      android:title="Add to task"/>
+	<item android:id="@+id/addToActionList"
+		android:showAsAction="always"
+		android:title="Add to actions"/>
 </menu>

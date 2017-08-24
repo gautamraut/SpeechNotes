@@ -11,7 +11,10 @@ import android.widget.TextView;
 
 import com.microsoft.CognitiveServicesExample.model.Message;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by shivanigupta on 8/24/17.
@@ -19,7 +22,7 @@ import java.util.List;
 
 public class ActionListAdapter extends RecyclerView.Adapter<ActionListAdapter.MyViewHolder>{
 
-    private List<Message> moviesList;
+    private String[] arraykey;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView contact, actions;
@@ -32,14 +35,16 @@ public class ActionListAdapter extends RecyclerView.Adapter<ActionListAdapter.My
     }
 
 
-    public ActionListAdapter(List<Message> moviesList) {
-        this.moviesList = moviesList;
+    public ActionListAdapter() {
+
+        Set<String> keys = DataAcrossActivity.getInstance().getActionItemMap().keySet();
+        arraykey = keys.toArray(new String[keys.size()]);
     }
 
     @Override
     public ActionListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_row, parent, false);
+                .inflate(R.layout.action_item_row, parent, false);
 
         return new ActionListAdapter.MyViewHolder(itemView);
     }
@@ -47,13 +52,17 @@ public class ActionListAdapter extends RecyclerView.Adapter<ActionListAdapter.My
 
     @Override
     public void onBindViewHolder(ActionListAdapter.MyViewHolder holder, final int position) {
-        Message msg = moviesList.get(position);
-        holder.contact.setText(msg.getMessage());
-        holder.actions.setText(msg.getMessage());
+
+        Map<String,String> map = DataAcrossActivity.getInstance().getActionItemMap();
+        String name = arraykey[position];
+        String value = map.get(arraykey[position]);
+        holder.contact.setText(name);
+        holder.actions.setText(value);
     }
 
     @Override
     public int getItemCount() {
-        return moviesList.size();
+
+        return arraykey.length;
     }
 }
