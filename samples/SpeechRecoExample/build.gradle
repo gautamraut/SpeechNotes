@@ -10,29 +10,29 @@ repositories {
 }
 dependencies {
     compile 'com.android.support:recyclerview-v7:23.0.1'
-    compile 'com.ibm.watson.developer_cloud:java-sdk:3.7.2'
-    compile 'com.android.support:recyclerview-v7:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.2.0'
-    compile 'com.microsoft.projectoxford:speechrecognition:1.2.2'
-    compile 'com.android.support:design:23.2.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.android.support:support-v13:25.3.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile ('com.microsoft.identity.client:msal:0.1.+') {
+    compile('com.microsoft.identity.client:msal:0.1.+') {
 //        exclude module: 'support-v4'
 //        exclude group: 'com.android.support', module: 'appcompat-v7'
 //        exclude group: 'com.android.support', module: 'support-v4'
 //        exclude group: 'com.android.support', module: 'appcompat-v4'
     }
 
+    compile 'com.android.support:recyclerview-v7:23.2.0'
+    compile 'com.ibm.watson.developer_cloud:java-sdk:3.7.2'
+    compile 'com.microsoft.projectoxford:speechrecognition:1.2.2'
+    compile 'com.android.support:design:23.2.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:support-v13:25.3.1'
+    compile 'com.android.support:support-v4:24.2.1'
     compile 'com.android.volley:volley:1.0.0'
+    compile 'com.android.support:design:25.0.0'
 }
 
 android {
 
-        dexOptions {
-            preDexLibraries = false
-        }
+    dexOptions {
+        preDexLibraries = false
+    }
 
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion

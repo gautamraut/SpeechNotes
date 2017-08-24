@@ -11,7 +11,7 @@
     https://westus.api.cognitive.microsoft.com/sts/v1.0/issuetoken
     -->
     <string name="authenticationUri"></string>
-    
+
     <string name="luisAppID">yourLuisAppID</string>
     <string name="luisSubscriptionID">yourLuisSubscriptionID</string>
 
@@ -21,6 +21,8 @@
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="picture">Take Picture</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab1">NOTES</string>
+    <string name="tab2">ACTION ITEMS</string>
+    <string name="tab3">REFERENCES</string>
+
 </resources>

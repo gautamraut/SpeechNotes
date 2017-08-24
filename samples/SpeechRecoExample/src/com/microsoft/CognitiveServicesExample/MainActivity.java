@@ -691,6 +691,9 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 manager.executePendingTransactions();
+            case R.id.done:
+                Intent intent = new Intent(this, Preview.class);
+                startActivity(intent);
             case R.id.saveAsPdf:
                 //createWebPrintJob(finalTextInWebView);
                 addImage("nn");
