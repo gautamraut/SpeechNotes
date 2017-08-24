@@ -20,4 +20,9 @@
         android:title="Camera"
         android:showAsAction="ifRoom"/>
 
+    <item android:id="@+id/saveAsPdf"
+          android:icon="@drawable/accept_icon"
+          android:title="TestAPI"
+          android:showAsAction="ifRoom"/>
+
 </menu>

@@ -11,7 +11,7 @@
     https://westus.api.cognitive.microsoft.com/sts/v1.0/issuetoken
     -->
     <string name="authenticationUri"></string>
-
+    
     <string name="luisAppID">yourLuisAppID</string>
     <string name="luisSubscriptionID">yourLuisSubscriptionID</string>
 

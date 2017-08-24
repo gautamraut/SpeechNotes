@@ -39,10 +39,15 @@ import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintManager;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -116,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     private Activity mActivity;
     private ProgressDialog mProgressDialog;
     private Fragment mCameraFrg;
+    private WebView finalTextInWebView;
 
     final static String apiKey = "AIzaSyBQY-XSNnYezYpoiUTb9kCIDAnklH4H2kE";
     final static String customSearchEngineKey = "017444164145125540543:pexazkna2qu";
@@ -272,6 +278,14 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         mWebView.setWebViewClient(new ASHelpWebViewClient());
         mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         mWebView.setHorizontalScrollBarEnabled(false);
+
+        finalTextInWebView = (WebView) findViewById(R.id.finalTextInWebView);
+        finalTextInWebView.getSettings().setJavaScriptEnabled(true);
+        finalTextInWebView.setWebViewClient(new ASHelpWebViewClient());
+        finalTextInWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        finalTextInWebView.setHorizontalScrollBarEnabled(false);
+
+        finalTextInWebView.loadUrl("file:///android_asset/text.html");
 
         prepareMovieData();
 
@@ -654,7 +668,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         android.app.FragmentManager manager = this.getFragmentManager();
         switch (item.getItemId()) {
             case R.id.test_api:
-                launchBottomSheet("hello");
+                //launchBottomSheet("hello");
+                startRestTestActivity();
                 //startRestTestActivity();
                 return true;
             case R.id.goback:
@@ -676,6 +691,9 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
                 manager.executePendingTransactions();
+            case R.id.saveAsPdf:
+                //createWebPrintJob(finalTextInWebView);
+                addImage("nn");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -684,8 +702,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
 
     private void startRestTestActivity()
     {
-//        Intent intent = new Intent(this, RestTester.class);
-//        startActivity(intent);
+        Intent intent = new Intent(this, MicrosoftIntegration.class);
+        startActivity(intent);
     }
 
 
@@ -702,6 +720,7 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         mAdapter.notifyDataSetChanged();
         if(isAccepted) {
             finalMessageView.append(message);
+            finalTextInWebView.loadUrl("javascript:appendText('" + message + "')");
         }
         finalMessageView.setSelection(finalMessageView.getText().length());
         //finalMessageView.clearFocus();
@@ -855,10 +874,6 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
             switch(item.getItemId()) {
 
                 case R.id.search:
-//                    cs = new StyleSpan(Typeface.BOLD);
-//                    ssb.setSpan(cs, start, end, 1);
-//                    finalMessageView.getText()
-//                    finalMessageView.setText(ssb);
                     String selectedText = finalMessageView.getText().toString().substring(start, end);
                     Log.d(Tag, "the search query is " + selectedText);
                     launchBottomSheet(selectedText);
@@ -874,7 +889,80 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
         }
 
         public void onDestroyActionMode(ActionMode mode) {
+
         }
+    }
+
+    private void createWebPrintJob(WebView webView) {
+
+        PrintManager printManager = (PrintManager) this
+                .getSystemService(Context.PRINT_SERVICE);
+
+        PrintDocumentAdapter printAdapter =
+                webView.createPrintDocumentAdapter("MyDocument");
+
+        String jobName = getString(R.string.app_name) + " Print Test";
+
+        printManager.print(jobName, printAdapter,
+                new PrintAttributes.Builder().build());
+    }
+
+    private void addImage(String path)
+    {
+        String base = Environment.getExternalStorageDirectory().getAbsolutePath().toString();
+        Log.d(Tag, "image path is " + base);
+        base = "/storage/emulated/0/Pictures/Screenshots";
+        String imagePath = "file://"+ base + "/test.png";
+        finalTextInWebView.loadUrl("javascript:appendImage('" + imagePath + "')");
+    }
+
+
+    private ActionMode mActionMode = null;
+
+    @Override
+    public void onActionModeStarted(ActionMode mode) {
+        if (mActionMode == null) {
+            mActionMode = mode;
+            Menu menu = mode.getMenu();
+            // Remove the default menu items (select all, copy, paste, search)
+            menu.clear();
+
+            // If you want to keep any of the defaults,
+            // remove the items you don't want individually:
+            // menu.removeItem(android.R.id.[id_of_item_to_remove])
+
+            // Inflate your own menu items
+            mode.getMenuInflater().inflate(R.menu.custom_options, menu);
+        }
+
+        super.onActionModeStarted(mode);
+        }
+
+    // This method is what you should set as your item's onClick
+    // <item android:onClick="onContextualMenuItemClicked" />
+    public void onContextualMenuItemClicked(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.search:
+                // do some stuff
+                break;
+            case R.id.addToTaskList:
+                // do some different stuff
+                break;
+            default:
+                // ...
+                break;
+        }
+
+        // This will likely always be true, but check it anyway, just in case
+        if (mActionMode != null) {
+            mActionMode.finish();
+        }
+    }
+
+    @Override
+    public void onActionModeFinished(ActionMode mode) {
+        mActionMode = null;
+        super.onActionModeFinished(mode);
     }
 
     public static String search(String pUrl) {
