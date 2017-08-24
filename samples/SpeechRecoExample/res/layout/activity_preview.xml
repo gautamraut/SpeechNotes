@@ -3,7 +3,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/activity_preview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.microsoft.CognitiveServicesExample.Preview">
@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:itemBackground="@color/colorPrimary"
+        android:background="@color/colorPrimary"
         app:itemIconTint="@drawable/bottom_navigation_color_selector"
         app:itemTextColor="@drawable/bottom_navigation_color_selector"
         app:menu="@menu/menu_bottom_navigation" />
