@@ -4,6 +4,7 @@ package com.microsoft.CognitiveServicesExample;
  * Created by shrbansa on 8/21/17.
  */
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,16 +21,20 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 
 	private List<Message> moviesList;
 	private MessageItemSelector mListener;
+	private MessageAdapter mAdapter;
 
 	public class MyViewHolder extends RecyclerView.ViewHolder {
 		public TextView title, year, genre;
 		public ImageButton accept, reject;
+		public CardView cardView;
 
 		public MyViewHolder(View view) {
 			super(view);
 			title = (TextView) view.findViewById(R.id.title);
 			accept = (ImageButton)view.findViewById(R.id.accept);
 			reject = (ImageButton)view.findViewById(R.id.reject);
+			cardView = (CardView)view.findViewById(R.id.card_view);
+
 		}
 	}
 
@@ -37,6 +42,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 	public MessageAdapter(List<Message> moviesList, MessageItemSelector listener) {
 		this.mListener = listener;
 		this.moviesList = moviesList;
+		mAdapter = this;
 	}
 
 	@Override
@@ -52,6 +58,10 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 	public void onBindViewHolder(MyViewHolder holder, final int position) {
 		Message msg = moviesList.get(position);
 		holder.title.setText(msg.getMessage());
+		if(moviesList.get(position).isAccepted() == true) {
+			holder.cardView.setCardBackgroundColor(R.color.colorAccent);
+			holder.accept.setVisibility(View.GONE);
+		}
 		holder.accept.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
@@ -59,6 +69,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 			{
 				Log.d("item accepted" , String.valueOf(position));
 				mListener.MessageItemSelected(moviesList.get(position).getMessage(), true, position);
+				moviesList.get(position).setAccepted(true);
+				mAdapter.notifyDataSetChanged();
 			}
 		});
 		holder.reject.setOnClickListener(new View.OnClickListener()

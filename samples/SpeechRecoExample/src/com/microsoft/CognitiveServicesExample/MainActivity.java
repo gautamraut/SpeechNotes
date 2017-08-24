@@ -574,8 +574,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     }
 
     private void prepareMovieData() {
-//        Message movie = new Message("Mad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla bla", "Action & Adventure", "2015");
-//        movieList.add(movie);
+        Message movie = new Message("Mad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla bla", "Action & Adventure", "2015");
+        movieList.add(movie);
 //
 //        movie = new Message("Inside Out", "Animation, Kids & Family", "2015");
 //        movieList.add(movie);
@@ -730,8 +730,8 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     @Override
     public void MessageItemSelected(String message, boolean isAccepted, int position)
     {
-        movieList.remove(position);
-        mAdapter.notifyDataSetChanged();
+//        movieList.remove(position);
+//        mAdapter.notifyDataSetChanged();
         if(isAccepted) {
             finalMessageView.append(message);
             finalTextInWebView.loadUrl("javascript:appendText('" + message + "')");
