@@ -655,13 +655,12 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
                 new LongOperation(finalMessageView.getText().toString()).execute("");
                 return true;
             case R.id.launch_camera:
-                new ActionItem("Shefali is assigned MA work.").execute("");
-//                mCameraFrg = Camera2BasicFragment.newInstance();
-//                FragmentTransaction fragmentTransaction = manager.beginTransaction();
-//                fragmentTransaction.add(R.id.container, mCameraFrg);
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
-//                manager.executePendingTransactions();
+                mCameraFrg = Camera2BasicFragment.newInstance();
+                FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                fragmentTransaction.add(R.id.container, mCameraFrg);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                manager.executePendingTransactions();
                 return true;
             case R.id.done:
                 finalTextInWebView.loadUrl("javascript:window.HTMLOUT.processHTML('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
