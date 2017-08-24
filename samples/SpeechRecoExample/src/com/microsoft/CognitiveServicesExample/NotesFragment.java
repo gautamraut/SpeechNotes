@@ -53,7 +53,8 @@ public class NotesFragment extends Fragment implements PreviewWebView.WebViewSoc
         mNotesWebView = (PreviewWebView) getView().findViewById(R.id.notesPreview);
         mNotesWebView.init(this);
 
-        mNotesWebView.loadUrl(DataAcrossActivity.getInstance().getNotes());
+        //mNotesWebView.loadUrl(DataAcrossActivity.getInstance().getNotes());
+        mNotesWebView.loadData(DataAcrossActivity.getInstance().getNotes(), "text/html", "UTF-8");
     }
 
     private void launchBottomSheet(String query) {
