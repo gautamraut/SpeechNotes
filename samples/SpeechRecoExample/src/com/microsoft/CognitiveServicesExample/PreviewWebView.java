@@ -82,6 +82,19 @@ public class PreviewWebView extends WebView
 
 				case R.id.addToTaskList:
 					return true;
+
+				case R.id.addToActionList:
+					mView.evaluateJavascript("(function(){return window.getSelection().toString()})()",
+							new ValueCallback<String>()
+							{
+								@Override
+								public void onReceiveValue(String value)
+								{
+									Log.v(Tag, "SELECTION:" + value);
+									mWebViewSocketListener.addToOthersTask(value);
+								}
+							});
+					return true;
 			}
 			return false;
 		}
