@@ -1,6 +1,8 @@
 package com.microsoft.CognitiveServicesExample;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
@@ -21,11 +23,14 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.microsoft.CognitiveServicesExample.model.Message;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -121,9 +126,10 @@ public class PreviewWebView extends WebView
 								public void onReceiveValue(String value)
 								{
 									Log.v(Tag, "SELECTION:" + value);
-									mWebViewSocketListener.addToOthersTask(value);
+									handleSaveToAI(value);
 								}
 							});
+					mode.finish();
 					return true;
 			}
 			return false;
@@ -211,5 +217,61 @@ public class PreviewWebView extends WebView
 		void lookup(String message);
 		void addToMyTask(String message);
 		void addToOthersTask(String message);
+	}
+
+
+	final String[] items = {" Shrasti Bansal"," Shivani Gupta"," Gautam Kumar"," Indu "};
+	// arraylist to keep the selected items
+	public static List<String> seletedItems = new ArrayList<>();
+
+
+	private void handleSaveToAI(final String msg)
+	{
+		AlertDialog dialog = new AlertDialog.Builder(mContext)
+				.setTitle("Choose Assignee")
+				.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked)
+					{
+						if (isChecked)
+						{
+							// If the user checked the item, add it to the selected items
+							seletedItems.add(items[indexSelected]);
+						}
+						else if (seletedItems.contains(indexSelected))
+						{
+							// Else, if the item is already in the array, remove it
+							seletedItems.remove(items[indexSelected]);
+						}
+					}
+				}).setPositiveButton("OK", new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int id)
+					{
+						//  Your code when user clicked on OK
+						//  You can write the code  to save the selected item here
+						for (int i = 0; i < seletedItems.size(); i++)
+						{
+							String prevMsg = DataAcrossActivity.getInstance().map.get(seletedItems.get(i));
+							if (prevMsg == null)
+							{
+								DataAcrossActivity.getInstance().map.put(seletedItems.get(i), "*  " + msg);
+							}
+							else {
+								DataAcrossActivity.getInstance().map.put(seletedItems.get(i), prevMsg + "\n" + "*  " + msg);
+							}
+						}
+					}
+				}).setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int id)
+					{
+						//  Your code when user clicked on Cancel
+					}
+				}).create();
+		dialog.show();
 	}
 }
