@@ -1,7 +1,11 @@
 package com.microsoft.CognitiveServicesExample;
 
 
+import android.content.Context;
 import android.os.Bundle;
+import android.print.PrintAttributes;
+import android.print.PrintDocumentAdapter;
+import android.print.PrintManager;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -9,6 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+
+import static android.R.id.message;
+import static android.os.Build.VERSION_CODES.M;
+import static com.microsoft.CognitiveServicesExample.R.id.finalTextInWebView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,5 +87,25 @@ public class NotesFragment extends Fragment implements PreviewWebView.WebViewSoc
     public void addToOthersTask(String message)
     {
         //add to others task
+    }
+
+    public void addLinks() {
+        String result = DataAcrossActivity.getInstance().getSearch_res();
+        result += "\n" + DataAcrossActivity.getInstance().getRef();
+        mNotesWebView.loadUrl("javascript:appendText('" + result + "')");
+//        mNotesWebView.loadUrl("javascript:addLink('"  + "')");
+    }
+    public void finalPrint()
+    {
+        PrintManager printManager = (PrintManager) getActivity()
+                .getSystemService(Context.PRINT_SERVICE);
+
+        PrintDocumentAdapter printAdapter =
+                mNotesWebView.createPrintDocumentAdapter("Notes");
+
+        String jobName = getString(R.string.app_name) + " Print Test";
+
+        printManager.print(jobName, printAdapter,
+                new PrintAttributes.Builder().build());
     }
 }

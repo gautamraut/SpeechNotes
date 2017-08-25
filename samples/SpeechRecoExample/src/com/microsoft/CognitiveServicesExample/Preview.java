@@ -1,12 +1,16 @@
 package com.microsoft.CognitiveServicesExample;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.support.design.widget.BottomNavigationView;
+
+import static android.support.design.R.styleable.BottomNavigationView;
 
 public class Preview extends AppCompatActivity {
 
@@ -97,6 +101,7 @@ public class Preview extends AppCompatActivity {
         setupViewPager(viewPager);
     }
 
+
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         notesFragment=new NotesFragment();
@@ -106,5 +111,26 @@ public class Preview extends AppCompatActivity {
         adapter.addFragment(actionItemsFragment);
         adapter.addFragment(referencesFragment);
         viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.preview_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        android.app.FragmentManager manager = this.getFragmentManager();
+        switch (item.getItemId()) {
+            case R.id.finalPrint:
+                notesFragment.addLinks();
+                notesFragment.finalPrint();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

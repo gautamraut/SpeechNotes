@@ -1,32 +1,12 @@
 package com.microsoft.CognitiveServicesExample;
 
 
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.TextView;
-
-import com.ibm.watson.developer_cloud.natural_language_understanding.v1.NaturalLanguageUnderstanding;
-import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.AnalysisResults;
-import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.AnalyzeOptions;
-import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.ConceptsOptions;
-import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.Features;
-import com.ibm.watson.developer_cloud.natural_language_understanding.v1.model.KeywordsOptions;
-import com.microsoft.CognitiveServicesExample.R;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 
 /**
@@ -75,22 +55,8 @@ public class ReferencesFragment extends Fragment{
 //            mReferenceWebView.loadUrl("file:///android_asset/text.html");
 //        }
 
-        String references = DataAcrossActivity.getInstance().getRef();
-        if(references.length() > 0){
-
-            String[] splitString = references.split(";");
-
-            textView.append("Suggested References:\n\n");
-            for (int i = 0; i < splitString.length; i++) {
-                textView.append("\t"+ String.valueOf(i+1) + ". "+ splitString[i] + "\n");
-            }
-
-            String[] splitResults = DataAcrossActivity.getInstance().getSearch_res().split(";");
-            textView.append("\n\nRelevant Search Results from Repo:\n\n");
-            for (int i = 0; i < splitResults.length; i++) {
-                textView.append("\t"+ String.valueOf(i+1) + ". "+ splitResults[i] + "\n");
-            }
-        }
+        textView.setText(DataAcrossActivity.getInstance().getRef());
+        textView.append(DataAcrossActivity.getInstance().getSearch_res());
     }
 
 //    private void launchBottomSheet(String query) {

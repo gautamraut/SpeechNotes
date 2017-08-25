@@ -1,6 +1,7 @@
 package com.microsoft.CognitiveServicesExample;
 
 import com.microsoft.CognitiveServicesExample.model.Message;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,9 +19,9 @@ public class DataAcrossActivity
     public static List<Message> movieList = new ArrayList<>();
 
     // variable of type String
-    private String notes;
-    private String references;
-    private String search_results;
+    private String notes = "";
+    private String references = "dummy";
+    private String search_results = "dummy";
 
     // private constructor restricted to this class itself
     private DataAcrossActivity()
@@ -50,7 +51,15 @@ public class DataAcrossActivity
     }
 
     public void setRef(String s){
-        references = s;
+        if(s.length() > 0)
+        {
+            references += "Suggested References:\n\n";
+            String[] splitString = s.split(";");
+            for (int i = 0; i < splitString.length; i++)
+            {
+                references += "\t" + String.valueOf(i + 1) + ". " + splitString[i] + "\n";
+            }
+        }
     }
 
     public String getRef(){
@@ -58,7 +67,16 @@ public class DataAcrossActivity
     }
 
     public void setSearch_res(String s){
-        search_results = s;
+        if(s.length() > 0)
+        {
+            search_results+= "\n\nRelevant Search Results from Repo:\n\n";
+            String[] splitResults = s.split(";");
+            for (int i = 0; i < splitResults.length; i++)
+            {
+                search_results+= "\t" + String.valueOf(i + 1) + ". " + splitResults[i] + "\n";
+            }
+        }
+
     }
 
     public String getSearch_res(){
