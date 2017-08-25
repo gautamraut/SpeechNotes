@@ -3,6 +3,7 @@ package com.microsoft.CognitiveServicesExample;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,8 +56,8 @@ public class ReferencesFragment extends Fragment{
 //            mReferenceWebView.loadUrl("file:///android_asset/text.html");
 //        }
 
-        textView.setText(DataAcrossActivity.getInstance().getRef());
-        textView.append(DataAcrossActivity.getInstance().getSearch_res());
+        textView.setText(Html.fromHtml(DataAcrossActivity.getInstance().getRef()));
+        textView.append(Html.fromHtml(DataAcrossActivity.getInstance().getSearch_res()));
     }
 
 //    private void launchBottomSheet(String query) {

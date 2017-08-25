@@ -675,9 +675,9 @@ public class MainActivity extends AppCompatActivity implements ISpeechRecognitio
     }
 
     private void prepareMovieData() {
-        Message movie = new Message("Mad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla bla", "Action & Adventure", "2015");
-        movieList.add(movie);
-        mAdapter.notifyDataSetChanged();
+        //Message movie = new Message("Mad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla blaMad Max: Fury RoadThis is testdata abd a lot of data bla bla bla", "Action & Adventure", "2015");
+        //movieList.add(movie);
+        //mAdapter.notifyDataSetChanged();
     }
 
     @Override

@@ -20,8 +20,8 @@ public class DataAcrossActivity
 
     // variable of type String
     private String notes = "";
-    private String references = "dummy";
-    private String search_results = "dummy";
+    private String references = "";
+    private String search_results = "";
 
     // private constructor restricted to this class itself
     private DataAcrossActivity()
@@ -53,11 +53,11 @@ public class DataAcrossActivity
     public void setRef(String s){
         if(s.length() > 0)
         {
-            references += "Suggested References:\n\n";
+            references += "<b>Suggested References:</b>\n\n";
             String[] splitString = s.split(";");
             for (int i = 0; i < splitString.length; i++)
             {
-                references += "\t" + String.valueOf(i + 1) + ". " + splitString[i] + "\n";
+                references += "\t" + String.valueOf(i + 1) + ". " + "<a href=\"" + splitString[i] + "\">" + splitString[i] + "</a>" + "\n";
             }
         }
     }
@@ -69,11 +69,11 @@ public class DataAcrossActivity
     public void setSearch_res(String s){
         if(s.length() > 0)
         {
-            search_results+= "\n\nRelevant Search Results from Repo:\n\n";
+            search_results+= "\n\n<b>Relevant Search Results from Repo:</b>\n\n";
             String[] splitResults = s.split(";");
             for (int i = 0; i < splitResults.length; i++)
             {
-                search_results+= "\t" + String.valueOf(i + 1) + ". " + splitResults[i] + "\n";
+                search_results+= "\t" + String.valueOf(i + 1) + ". " + "<a href=\"" + splitResults[i] + "\">" + splitResults[i] + "</a>" + "\n";
             }
         }
 
